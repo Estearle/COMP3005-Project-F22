@@ -15,9 +15,9 @@ create table publishers
 	);
 	
 create table phone
-	(Name			VARCHAR(20) NOT NULL REFERENCES publisher,
+	(Name			VARCHAR(20) NOT NULL REFERENCES publishers,
 	 Phone			CHAR(10) NOT NULL UNIQUE,
-	 primary key (Name, Phone),
+	 primary key (Name, Phone)
 	);
 	
 create table books
@@ -27,7 +27,7 @@ create table books
 	 Price			NUMERIC(5,2) NOT NULL,
 	 Stock			INTEGER NOT NULL,
 	 NumberSold		INTEGER,
-	 Publisher		VARCHAR(20) NOT NULL UNIQUE REFERENCES publisher(Name),
+	 Publisher		VARCHAR(20) NOT NULL REFERENCES publishers(Name),
 	 PercentSales	NUMERIC(3,0)
 	);
 	
@@ -36,11 +36,11 @@ create table orders
 	 BillingInfo	VARCHAR(30),
 	 ShippingInfo	VARCHAR(30),
 	 TrackingInfo	CHAR(10),
-	 Customer		CHAR(9) NOT NULL REFERENCES customer(ID)
+	 Customer		CHAR(9) NOT NULL REFERENCES customers(ID)
 	);
 
 create table bookorders
-	(OrderNumber	CHAR(12) NOT NULL UNIQUE,
+	(OrderNumber	CHAR(12) NOT NULL,
 	 ISBN			CHAR(13) NOT NULL,
 	 NumberSold		INTEGER NOT NULL,
 	 primary key (OrderNumber, ISBN),

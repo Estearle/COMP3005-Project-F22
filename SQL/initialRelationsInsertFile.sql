@@ -2,7 +2,7 @@ delete from bookgenres;
 delete from bookauthors;
 delete from genres;
 delete from authors;
-delete from bookorder;
+delete from bookorders;
 delete from orders;
 delete from books;
 delete from phone;
