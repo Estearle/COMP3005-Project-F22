@@ -11,7 +11,7 @@ create table publishers
 	(Name			VARCHAR(20) NOT NULL UNIQUE PRIMARY KEY,
 	 Address		VARCHAR(30),
 	 Email			VARCHAR(30) NOT NULL UNIQUE,
-	 BankAccount	CHAR(16) NOT NULL UNIQUE
+	 BankAccount	CHAR(10) NOT NULL UNIQUE
 	);
 	
 create table phone
@@ -35,11 +35,11 @@ create table orders
 	(OrderNumber	CHAR(10) NOT NULL UNIQUE PRIMARY KEY,
 	 BillingInfo	VARCHAR(30),
 	 ShippingInfo	VARCHAR(30),
-	 TrackingInfo	VARCHAR(30),
+	 TrackingInfo	CHAR(10),
 	 Customer		CHAR(9) NOT NULL REFERENCES customer(ID)
 	);
 
-create table bookorder
+create table bookorders
 	(OrderNumber	CHAR(12) NOT NULL UNIQUE,
 	 ISBN			CHAR(13) NOT NULL,
 	 NumberSold		INTEGER NOT NULL,
