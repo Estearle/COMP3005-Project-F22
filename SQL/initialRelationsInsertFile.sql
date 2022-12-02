@@ -111,7 +111,7 @@ insert into bookgenres values ('2695219697626', 'Comedy');
 insert into bookgenres values ('4027301475421', 'Development');
 insert into bookgenres values ('4027301475421', 'Self-help');
 insert into bookgenres values ('2070156086412', 'Motivational');
-insert into bookgenres values ('2070156086412', 'Self-help', '65');
+insert into bookgenres values ('2070156086412', 'Self-help');
 insert into bookgenres values ('7279061426000', 'Sci-fi');
 insert into bookgenres values ('7279061426000', 'Adventure');
 insert into bookgenres values ('7527440149107', 'Sci-fi');
