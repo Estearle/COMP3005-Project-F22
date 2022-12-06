@@ -1,0 +1,18 @@
+html 
+    head 
+        title Registration Page
+body 
+    include ./header      
+    h1 Registration Page 
+
+    button(type="button",id="exist") Existing User 
+    button(type="button",id="login") Register 
+    |Login Name: 
+    input(type="text",id="login")
+    br
+    br
+    |Password: 
+    input(type="text",id="password")
+
+    button(type="button",id="submit")
+    script(src="../login.js")
