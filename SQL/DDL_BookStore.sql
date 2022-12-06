@@ -28,6 +28,7 @@ create table books
 	 Stock			INTEGER NOT NULL,
 	 NumberSold		INTEGER,
 	 Publisher		VARCHAR(20) NOT NULL REFERENCES publishers(Name),
+	 Cost			NUMERIC(5,2) NOT NULL,
 	 PercentSales	NUMERIC(3,0)
 	);
 	
