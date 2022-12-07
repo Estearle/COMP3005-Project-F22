@@ -1,3 +1,4 @@
+import logger from 'morgan';
 const express = require('express');
 const fs = require("fs");
 const app = express();
