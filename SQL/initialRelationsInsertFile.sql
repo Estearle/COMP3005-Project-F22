@@ -40,10 +40,10 @@ insert into books values ('2070156086412', 'Words From Other', '180', '15.99', '
 insert into books values ('7279061426000', 'The Fall of Dawn', '887', '49.99', '40', '20', 'Tryhard', '25.99', '52', 'N');
 insert into books values ('7527440149107', 'Moons of Andromeda', '750', '44.99', '32', '8', 'Tryhard', '20.99', '54', 'N');
 insert into books values ('1237317760445', 'Cheat the Truth', '456', '35.00', '14', '6', 'Tryhard', '15.99', '50', 'Y');
-insert into orders values ('1360052216', '1200 Mountain Dr', '1200 Mountain Dr', 'hX0Epdq347', '100100104');
-insert into orders values ('1360052217', '369 Bronze Ave', '369 Bronze Ave', 'QKfCz6OI1m', '100100102');
-insert into orders values ('1360052218', '32 Airport Ave', '32 Airport Ave', 'swuSUYC1qw', '100100105');
-insert into orders values ('1360052219', '750 Private Lane', '750 Private Lane', 'yIFX7DUH6I', '100100103');
+insert into orders values ('1360052216', '1200 Mountain Dr', '1200 Mountain Dr', 'hX0Epdq347', 'poole_sara');
+insert into orders values ('1360052217', '369 Bronze Ave', '369 Bronze Ave', 'QKfCz6OI1m', 'layson');
+insert into orders values ('1360052218', '32 Airport Ave', '32 Airport Ave', 'swuSUYC1qw', 't_house');
+insert into orders values ('1360052219', '750 Private Lane', '750 Private Lane', 'yIFX7DUH6I', 'ttest123');
 insert into bookorders values ('1360052216', '4896420126597', '1');
 insert into bookorders values ('1360052216', '1209336773139', '1');
 insert into bookorders values ('1360052217', '4129437285186', '1');
