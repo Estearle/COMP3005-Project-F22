@@ -16,7 +16,6 @@ app.set('views','./views');
 app.set('view engine','pug');
 
 //connect server
-//
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
@@ -51,16 +50,16 @@ app.get('/books',(req,response)=>{
   }) 
 })
 
-//Specific Books(GET)
+// Specific Book Page
 app.get('/books/:ISBN',(req,response)=>{
   let obj_id = req.params.ISBN;
   let book,genre;
-  client.query(`SELECT * FROM books WHERE isbn='${obj_id}'`,(err,res)=>{
+  client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
     if(err){
       response.status(404);
     }
     book = res.rows;
-    client.query(`SELECT genre FROM bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
+    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
       if(err){
         response.status(404);
       }
@@ -73,7 +72,7 @@ app.get('/books/:ISBN',(req,response)=>{
   })  
 })
   
-//add book
+// Add Book Page
 app.get("/add",(req,response)=>{
   let publishers, authors, genres;
   client.query('SELECT * FROM public.publishers',(err,res)=>{
@@ -91,15 +90,13 @@ app.get("/add",(req,response)=>{
           response.status(404);
         }
         genres = res.rows;
-        console.log(publishers);
-        console.log(authors);
-        console.log(genres);
         response.status(200).render('add',{publishers:publishers, authors:authors, genres:genres});
       });
     });
   }); 
  })
 
+ // Add Book request
 app.post('/books/:ISBN',(req,response)=>{
   let newBook = req.body;
   console.log("checking newBook in server");
@@ -162,19 +159,64 @@ app.post('/books/:ISBN',(req,response)=>{
 })
 
 
-//Cart
+// Cart Page
 app.get('order',(req,res)=>{
     res.render('order',{});
 })
 
 
-// Report
+// Reports Pages
 app.get('/report',(req,res)=>{
     res.render('report',{});
 })
 
 
+// Owner Home Page
+app.get('/owner', (req,res) => {
+    res.render('owner',{});
+})
 
 
+function getBookGenre(isbn) {
+  let getGenres;
+  if (isbn != null) {
+    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${isbn}'`,(err,r)=>{
+      if(err){
+        response.status(404);
+      }
+      getGenres = r.rows;
+      console.log(getGenres);
+      return genre;
+    })
+  }
+  client.query('SELECT * FROM public.bookgenres',(err,res)=>{
+    if(err){
+      response.status(404);
+    }
+    getGenres = r.rows;
+    console.log(getGenres);
+    return genre;
+  }) 
+}
 
-
+function getBookAuthor(isbn) {
+  let getAuthors;
+  if (isbn != null) {
+    client.query(`SELECT genre FROM public.bookauthors WHERE isbn='${isbn}'`,(err,r)=>{
+      if(err){
+        response.status(404);
+      }
+      getAuthors = r.rows;
+      console.log(getAuthors);
+      return genre;
+    })
+  }
+  client.query('SELECT * FROM public.bookauthors',(err,res)=>{
+    if(err){
+      response.status(404);
+    }
+    getAuthors = r.rows;
+    console.log(getGenres);
+    return genre;
+  }) 
+}

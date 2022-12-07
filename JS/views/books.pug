@@ -4,22 +4,12 @@ html
 body 
     include ./userheaders  
     br
-    br   
-    strong Search
+    strong Search: 
+    input(type="text",id="search")
+    br    
+    button(type="button",id="searchB") Search
     br
-    |Book Name: 
-    input(type="text",id="bName")
-    |Author name: 
-    input(type="text",id="aName")
     br
-    |ISBN: 
-    input(type="text",id="isbnBook")
-    |Genre: 
-    input(type="text",id="genreBook")
-    br
-    button(type="button",id="search") Search
-    br
-
     strong List Of Books
     br
     div#bookList
