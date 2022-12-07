@@ -1,59 +1,59 @@
-let addBtn = document.getElementById("add");
-addBtn.onclick = addBook;
+let addCart = document.getElementById("addCart");
+addCart.onlick = addCartFunction;
+let search = document.getElementById("search");
+search.onclick = searchFunction;
 
-function addBook(){
-    let bookName = document.getElementById("bkName").value;
-    let isbn =document.getElementById('isbn').value;
-    let author = document.getElementById("author").value;
-    let publisher = document.getElementById("publisher").value;
-    let pages = Number(document.getElementById("pages").value);
-    let price = Number(document.getElementById("price").value);
-    let stock = Number(document.getElementById("stock").value);
-    let cost = Number(document.getElementById("cost").value);
-    let errorMsg ="";
 
+function addCartFunction(){
+
+}
+
+function searchFunction(){
+    console.log("SEARCHING!")
+    let bookName = document.getElementById("bName").value;
+    let isbn =document.getElementById('isbnBook').value;
+    let author = document.getElementById("aName").value;
+    let genre = document.getElementById("genreBook").value;
+    let checkbox = document.getElementById("bookList").querySelectorAll(".search");
+    let search ;
+
+    
     //check the input
     //if the input is incorrect, alert the owner
-    if(bookName.length !== 0 && isbn.length === 13 && author.length !== 0 && publisher.length !== 0 && !isNaN(pages) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("pages").value.length !==0){
-        let newBook = {'isbn':isbn, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher,'pages':pages,'price':price,'stock':stock,'cost':cost};
-        let xhttp = new XMLHttpRequest()
-        xhttp.onreadystatechange = function() { 
-            console.log("Add New Book");
-            if (this.readyState == 4 && this.status == 200) {
-                alert("Success!");
-            }
-        }
-    //Send a POST request to the server with the new book information
-    xhttp.open("POST", `/books/${isbn}`);
-    xhttp.setRequestHeader("Content-Type", "application/json");
-    xhttp.send(JSON.stringify(newBook))
+    if(bookName.length !== 0){
+        search = bookName;
+        
+    } 
+    else if(isbn.length === 13){
+        search = isbn;
+    }
+    else if (author.length !== 0 ){
+        search = author;
+    }
+    else if(genre.length !== 0){
+        search = genre;
     }
     else{
-        if(bookName.length === 0){
-            errorMsg +="Please enter the book name.\n";
-        }
-        if(isbn.length !== 13){
-            errorMsg +="Incorrect ISBN.\n";
-        }
-        if(author.length !== 0){
-            errorMsg += "Please enter the name of the author.\n";
-        }
-        if(publisher.length !== 0){
-            errorMsg += "Please enter the name of the publisher.\n";
-        }
-        if(isNaN(parseInt(document.getElementById("pages").value))){
-            errorMsg += "Please enter the number of page.\n";
-        }
-        if(isNaN(parseFloat(document.getElementById("price").value))){
-            errorMsg += "Please enter a number for the price.\n";
-        }
-        if(isNaN(parseInt(document.getElementById("stock").value))){
-            errorMsg +="Please enter a number for stock.\n";
-        }
-        if(isNaN(parseInt(document.getElementById("cost").value))){
-            errorMsg += "Please enter a number for cost.\n";
-        }
-        alert(errorMsg);
+        alert("Please enter at least one of them.")
         return;
     }
+
+    for( books in checkbox){
+        console.log(checkbox[books].name.isbn)
+        let label = document.getElementById(checkbox[books].name[isbn]);
+        console.log(label)
+        let obj = checkbox[books].name;
+        if(obj !== search){
+            checkbox[books].style.display = "hidden";
+            label.style.display = "hidden";
+        }
+        else{
+            checkbox[books].style.display = "visible";
+            label.style.display ="visible";
+        }
+        
+    }
+    
+
+    
 }
