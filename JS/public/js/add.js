@@ -3,6 +3,7 @@ addBtn.onclick = function addBook(){
     let bookName = document.getElementById("bkName").value;
     let isbn =document.getElementById('isbn').value;
     let author = document.getElementById("author").value;
+    let genre = document.getElementById("genre").value;
     let publisher = document.getElementById("publisher").value;
     let pages = Number(document.getElementById("pages").value);
     let price = Number(document.getElementById("price").value);
@@ -13,8 +14,8 @@ addBtn.onclick = function addBook(){
     //check the input
     //if the input is incorrect, alert the owner
     if(bookName.length !== 0 && isbn.length === 13 && author.length !== 0 && publisher.length !== 0 && !isNaN(pages) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("pages").value.length !==0){
-        let newBook = {'isbn':isbn, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher,'pages':pages,'price':price,'stock':stock,'cost':cost};
-        let xhttp = new XMLHttpRequest()
+        let newBook = {'isbn':isbn, 'author':author, 'genre':genre, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher,'pages':pages,'price':price,'stock':stock,'cost':cost};
+        let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() { 
             console.log("Add New Book");
             if (this.readyState == 4 && this.status == 200) {

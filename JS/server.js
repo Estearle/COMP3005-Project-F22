@@ -86,12 +86,11 @@ app.post('/books/:ISBN',(req,response)=>{
 
   let query = {
     text:'INSERT INTO books (ISBN,BookName,Pages,Price,Stock,NumberSold,Publisher,Cost,PercentSales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-    values:[newBook.isbn, newBook.bookname,newBook.pages,newBook.price,newBook.stock, 0, newBook.publisher, newBook.cost,0],
+    values:[newBook.isbn, newBook.bookname, newBook.pages, newBook.price, newBook.stock, 0, newBook.publisher, newBook.cost, 0]
   }
 
   let authors = newBook.author;
-  console.log('AUTHORS: ' + authors);
-  aArray = authors.split(",");
+  aArray = authors.split(", ");
   let aList = [];
   aArray.forEach(element => {
     console.log(element);
@@ -101,14 +100,14 @@ app.post('/books/:ISBN',(req,response)=>{
     text:`INSERT INTO bookauthors (ISBN,Author) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${aList} AS Author)`,
   }
   let genres = newBook.genre;
-  gArray = genres.split(",");
+  gArray = genres.split(", ");
   let gList = [];
   gArray.forEach(element => {
     console.log(element);
     gList.push([newBook.isbn, element]);
   });
   let gQuery = {
-    text:`INSERT INTO bookauthors (ISBN,Genres) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${gList} AS Genres)`,
+    text:`INSERT INTO bookgenres (ISBN,Genres) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${gList} AS Genres)`,
   }
 
   console.log("query");
