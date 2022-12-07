@@ -16,6 +16,7 @@ app.set('views','./views');
 app.set('view engine','pug');
 
 //connect server
+//
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
@@ -42,24 +43,25 @@ app.get('/',(req,res)=>{
 app.get('/books',(req,response)=>{
   client.query('SELECT * FROM public.books',(err,res)=>{
     if(err){
-      response.status(404);
+      respopnse.status(404);
     }
     console.log(res.rows);
     books = res.rows;
     response.status(200).render('books',{books,books});
-  }) 
+  })
+  
 })
 
-// Specific Book Page
+//Specific Books(GET)
 app.get('/books/:ISBN',(req,response)=>{
   let obj_id = req.params.ISBN;
   let book,genre;
-  client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
+  client.query(`SELECT * FROM books WHERE isbn='${obj_id}'`,(err,res)=>{
     if(err){
       response.status(404);
     }
     book = res.rows;
-    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
+    client.query(`SELECT genre FROM bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
       if(err){
         response.status(404);
       }
@@ -72,151 +74,93 @@ app.get('/books/:ISBN',(req,response)=>{
   })  
 })
   
-// Add Book Page
-app.get("/add",(req,response)=>{
-  let publishers, authors, genres;
-  client.query('SELECT * FROM public.publishers',(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    publishers = res.rows;
-    client.query('SELECT * FROM public.authors',(err,res)=>{
-      if(err){
-        response.status(404);
-      }
-      authors = res.rows;
-      client.query('SELECT * FROM public.genres',(err,res)=>{
-        if(err){
-          response.status(404);
-        }
-        genres = res.rows;
-        response.status(200).render('add',{publishers:publishers, authors:authors, genres:genres});
-      });
-    });
-  }); 
- })
+//add book
+app.get("/add",(req,res)=>{
+  res.render("add");
+})
 
- // Add Book request
 app.post('/books/:ISBN',(req,response)=>{
   let newBook = req.body;
   console.log("checking newBook in server");
   console.log(JSON.stringify(newBook));
-  
-  let authors = newBook.author;
-  aArray = authors.split(", ");
 
-  let genres = newBook.genre;
-  gArray = genres.split(", ");
-
-  // query for adding into books relation
   let query = {
-    text:'INSERT INTO books(isbn,bookname,pages,price,stock,numbersold,publisher,cost,percentsales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-    values:[newBook.isbn, newBook.bookname, newBook.pages, newBook.price, newBook.stock, 0, newBook.publisher, newBook.cost, newBook.psales],
+    text:'INSERT INTO books (ISBN,BookName,Pages,Price,Stock,NumberSold,Publisher,Cost,PercentSales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+    values:[newBook.isbn, newBook.bookname, newBook.pages, newBook.price, newBook.stock, 0, newBook.publisher, newBook.cost, newBook.psales]
   }
 
-  console.log("query");
+  let authors = newBook.author;
+  aArray = authors.split(", ");
+  let aList = [];
+  aArray.forEach(element => {
+    console.log(element);
+    aList.push([newBook.isbn, element]);
+  });
+  let aQuery = `INSERT INTO bookauthors (ISBN,Author) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${aList} AS Author;`
   
-  // start of books insert
+  let genres = newBook.genre;
+  gArray = genres.split(", ");
+  let gList = [];
+  gArray.forEach(element => {
+    console.log(element);
+    gList.push([newBook.isbn, element]);
+  });
+  let gQuery = `INSERT INTO bookgenres (ISBN,Genres) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${gList} AS Genres;`
+
+  console.log("query");
   client.query(query,(err,res)=>{
     if(err){
-      console.log("could not add book to database");
+      response.status(500);
+      console.log(res);
     } else {
       console.log("books added");
-
-      // start of bookauthors insert
-      aArray.forEach(element => {
-        console.log(element);
-        client.query(`INSERT INTO bookauthors (isbn,author) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
-          if(err){
-            console.log("could not add authors to database");
-          } else {
-
-            console.log("bookauthors: " + element);
-            console.log("author added");
-            // start of bookgenres insert
-            gArray.forEach(element => {
-              console.log(element);
-              client.query(`INSERT INTO bookgenres (isbn,genre) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
-                if(err){
-                  console.log(err);
-                  console.log("could not add genre to database");
-                  response.status(500).send();
-                } else {
-                  console.log("bookgenres: " + element);
-                  console.log("genre added");
-                  console.log("successfully added information to database");
-                  response.status(200).send();
-                } // end of bookgenres insert
-              });
-            });
-
-          } // end of bookauthors insert
-        });
-      });
-
-    } // end of books insert
+      console.log(res);
+      response.status(200);
+    }
   })
+  
+  console.log("authors");
+  client.query(aQuery,(err,res)=>{
+    if(err){
+      response.status(500);
+      console.log(res);
+    } else {
+      console.log("authors added");
+      console.log(res);
+      response.status(200);
+    }
+  })
+  
+  console.log("genre");
+  client.query(gQuery,(err,res)=>{
+    if(err){
+      response.status(500);
+      console.log(res);
+    }  else {
+      console.log("genres added");
+      console.log(res);
+      response.status(200);
+    }
+  })
+  console.log("success");
+  response.status(200);
+  response.json({});
 })
 
 
-// Cart Page
+//Cart
 app.get('order',(req,res)=>{
     res.render('order',{});
 })
 
 
-// Reports Pages
+// Report
 app.get('/report',(req,res)=>{
     res.render('report',{});
 })
 
 
-// Owner Home Page
-app.get('/owner', (req,res) => {
-    res.render('owner',{});
-})
 
 
-function getBookGenre(isbn) {
-  let getGenres;
-  if (isbn != null) {
-    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${isbn}'`,(err,r)=>{
-      if(err){
-        response.status(404);
-      }
-      getGenres = r.rows;
-      console.log(getGenres);
-      return genre;
-    })
-  }
-  client.query('SELECT * FROM public.bookgenres',(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    getGenres = r.rows;
-    console.log(getGenres);
-    return genre;
-  }) 
-}
 
-function getBookAuthor(isbn) {
-  let getAuthors;
-  if (isbn != null) {
-    client.query(`SELECT genre FROM public.bookauthors WHERE isbn='${isbn}'`,(err,r)=>{
-      if(err){
-        response.status(404);
-      }
-      getAuthors = r.rows;
-      console.log(getAuthors);
-      return genre;
-    })
-  }
-  client.query('SELECT * FROM public.bookauthors',(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    getAuthors = r.rows;
-    console.log(getGenres);
-    return genre;
-  }) 
-}
+

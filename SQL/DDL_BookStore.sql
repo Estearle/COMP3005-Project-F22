@@ -1,6 +1,5 @@
 create table customers
-	(Uname			VARCHAR(20) NOT NULL UNIQUE PRIMARY KEY,
-	 Password 		VARCHAR(30) NOT NULL,
+	(ID				CHAR(9) NOT NULL UNIQUE PRIMARY KEY,
 	 Fname			VARCHAR(15) NOT NULL,
 	 Lname			VARCHAR(15) NOT NULL,
 	 Email			VARCHAR(30) NOT NULL UNIQUE,
@@ -30,8 +29,7 @@ create table books
 	 NumberSold		INTEGER,
 	 Publisher		VARCHAR(20) NOT NULL REFERENCES publishers(Name),
 	 Cost			NUMERIC(5,2) NOT NULL,
-	 PercentSales	NUMERIC(3,0),
-	 Restock		BOOLEAN
+	 PercentSales	NUMERIC(3,0)
 	);
 	
 create table orders
@@ -76,4 +74,3 @@ create table bookgenres
 	 foreign key (ISBN) REFERENCES books,
 	 foreign key (Genre) REFERENCES genres
 	);
-	 
