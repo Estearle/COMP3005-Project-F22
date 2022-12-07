@@ -1,7 +1,31 @@
 html 
     head 
-        title #{} Information
+        title #{book[0].bookname} Information
 body 
-    include ./header     
-
-    p1 #{}
+    include ./headers     
+    p
+        | Book Name:#{book[0].bookname} 
+        br 
+        br
+        | ISBN:#{book[0].isbn}
+        br
+        br
+        |Genre:
+        ul 
+        each g in genre 
+            li #{g.genre}
+            br
+        | Pages:#{book[0].pages}
+        br
+        br
+        | Price:#{book[0].price} 
+        br
+        br
+        | Stock:#{book[0].stock} 
+        br
+        br
+        | Number of Sold:#{book[0].numbersold}
+        br
+        br
+        | Publisher:#{book[0].publisher} 
+    

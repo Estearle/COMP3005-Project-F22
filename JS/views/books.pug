@@ -2,19 +2,26 @@ html
     head 
         title Books
 body 
-    include ./header     
-
-
-
-
-
-
+    include ./headers  
+    br
+    br   
+    strong List Of Books
+    br
+    each book in books
+        a(href="/books/"+book.isbn) #{book.bookname}
+        br
+    br
+    strong Search
+    br
     |Book Name: 
     input(type="text",id="bkName")
     |Author name: 
     input(type="text",id="aName")
+    br
     |ISBN: 
     input(type="text",id="isbn")
     |Genre: 
     input(type="text",id="genre")
+    br
     button(type="button",id="submit") Submit
+    script(src="../search.js")

@@ -1,0 +1,40 @@
+html 
+    head 
+        title Add
+    body 
+        include ./headers
+        
+        h1 Add a new book: 
+        p 
+            |Book Name: 
+            input(type="text",id="bkName" )
+            br 
+            br
+            |ISBN: 
+            input(type="text",id="isbn")
+            br
+            br
+            |Price: 
+            input(type="text",id="price")
+            br
+            br
+            |Author
+            input(type="text",id="author")
+            br
+            br
+            |Number of Page: 
+            input(type="text",id="pages")
+            br
+            br
+            |Stock: 
+            input(type="text",id="stock")
+            br
+            br
+            |Cost: 
+            input(type="text",id="cost")
+            br
+            br
+            |Publisher: 
+            input(type="text",id="publisher", size="50")
+        button(type="button" id="add") Add Book
+        script(src="../search.js")
