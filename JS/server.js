@@ -20,7 +20,7 @@ app.set('view engine','pug');
 const client = new Client({
   user: 'postgres',
   host: 'localhost',
-  database: 'bookstore',
+  database: 'postgres',
   password: 'password',
   port: 5432,
 })
