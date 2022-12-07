@@ -14,27 +14,26 @@ function searchFunction(){
     let author = document.getElementById("aName").value;
     let genre = document.getElementById("genreBook").value;
     let checkbox = document.getElementById("bookList").querySelectorAll(".search");
-    let search;
+    let search = "";
 
     if(bookName.length !== 0){
-        search = bookName;
-        
+        search += bookName;
     } 
     else if(isbn.length === 13){
-        search = isbn;
+        search += isbn;
     }
     else if (author.length !== 0 ){
-        search = author;
+        search += author;
     }
     else if(genre.length !== 0){
-        search = genre;
+        search += genre;
     }
     else{
         alert("Please enter at least one of them.")
         return;
     }
 
-    for( books in checkbox){
+    for(books in checkbox){
         console.log(checkbox[books].name.isbn)
         let label = document.getElementById(checkbox[books].name[isbn]);
         console.log(label)
