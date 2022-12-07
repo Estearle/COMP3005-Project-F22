@@ -14,7 +14,7 @@ function addBook(){
 
     //check the input
     //if the input is incorrect, alert the owner
-    if(nameItem.length !== 0 && isbn.length === 13 && author.length !== 0 && publisher.length !== 0 && !isNaN(page) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("page").value.length !==0){
+    if(bookName.length !== 0 && isbn.length === 13 && author.length !== 0 && publisher.length !== 0 && !isNaN(pages) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("pages").value.length !==0){
         let newBook = {'isbn':isbn, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher,'pages':pages,'price':price,'stock':stock,'cost':cost};
         let xhttp = new XMLHttpRequest()
         xhttp.onreadystatechange = function() { 

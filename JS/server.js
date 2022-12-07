@@ -78,11 +78,35 @@ app.get('/books/:ISBN',(req,response)=>{
 app.get("/add",(req,res)=>{
   res.render("add");
 })
+
 app.post('/books/:ISBN',(req,response)=>{
-  let newBook=req.body;
+  let newBook = req.body;
   console.log(JSON.stringify(newBook));
-  client.query(`insert into books values ('${newBook.isbn}', ${newBook.bookname}, ${newBook.pages}, ${newBook.price}, ${newBook.stock}, 0, ${newBook.publisher}, ${newBook.cost},0)`,(err,res)=>{
-    console.log(err,res);
+  let query = {
+    text:'INSERT INTO books (ISBN,BookName,Pages,Price,Stock,NumberSold,Publisher,Cost,PercentSales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+    values:[newBook.isbn, newBook.bookname,newBook.pages,newBook.price,newBook.stock, 0, newBook.publisher, newBook.cost,0],
+  }
+  let authors = {
+    text:'INSERT INTO bookauthors (ISBN,Author) VALUES($1,$2)',
+    values:[newBook.isbn,newBook.author],
+  }
+  let genre = {
+    text:'INSERT INTO bookgenres (ISBN,Genres) VALUES($1,$2)',
+    values:[newBook.isbn,newBook.genre],
+  }
+  client.query(query,(err,res)=>{
+    if(err){
+      response.status(500);
+    }
+  })
+
+  client.query(authors,(err,res)=>{
+    if(err){
+      response.status(500);
+    }})
+  
+  client.query(genre,(err,res)=>{
+    response.status(500);
   })
 })
 
