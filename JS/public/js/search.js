@@ -22,7 +22,11 @@ function searchFunction(){
 
         let searchInfoRegex = new RegExp(searchInfo.join('|'), 'gim');
         for(let i = 0; i < allBooks.length; i++) {
-            books.push(JSON.parse(allBooks[i].name));
+            let bookInfo = JSON.parse(allBooks[i].name);
+            books.push(bookInfo);
+            allBooks[i].style.display = "none";
+            let label = document.getElementById(bookInfo.isbn);
+            label.style.display = "none";
         };
         console.log("books");
         console.log(books);
@@ -36,23 +40,27 @@ function searchFunction(){
             return bookSearch.match(searchInfoRegex);
         })
         console.log(bookMatch);
-        // still working on showing it to the page but I have a filtered array of it now
-        // for(let book in books){
-        //     console.log(books[book].name.isbn)
-        //     let label = document.getElementById(books[book].name[isbn]);
-        //     console.log(label)
-        //     let obj = books[book].name;
-        //     if(obj !== search){
-        //         books[book].style.display = "none";
-        //         label.style.display = "none";
-        //     }
-        //     else{
-        //         books[book].style.display = "visible";
-        //         label.style.display ="visible";
-        //     }
-        // }
+        
+        for (let book of bookMatch) {
+            for(let i = 0; i < allBooks.length; i++) {
+                let bookInfo = JSON.parse(allBooks[i].name);
+                // console.log("HTML Element: ");
+                // console.log(bookInfo);
+                // console.log("Fileterd Book Element: ");
+                // console.log(book);
+                // console.log("HTML Element Book ISBN: " + bookInfo.isbn);
+                // console.log("Filtered Book ISBN: " + book.isbn);
+                if (bookInfo.isbn == book.isbn){
+                    console.log("found matching book!");
+                    allBooks[i].style.display = "";
+                    let label = document.getElementById(bookInfo.isbn);
+                    label.style.display = "";
+                    break;
+                }
+            } 
+        };
     } else {
-        alert("Search information is empty");
+        window.location.replace('/books');
         return;
     }
 
