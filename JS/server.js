@@ -43,13 +43,12 @@ app.get('/',(req,res)=>{
 app.get('/books',(req,response)=>{
   client.query('SELECT * FROM public.books',(err,res)=>{
     if(err){
-      respopnse.status(404);
+      response.status(404);
     }
     console.log(res.rows);
     books = res.rows;
     response.status(200).render('books',{books,books});
-  })
-  
+  }) 
 })
 
 //Specific Books(GET)
@@ -75,76 +74,91 @@ app.get('/books/:ISBN',(req,response)=>{
 })
   
 //add book
-app.get("/add",(req,res)=>{
-  res.render("add");
-})
+app.get("/add",(req,response)=>{
+  let publishers, authors, genres;
+  client.query('SELECT * FROM public.publishers',(err,res)=>{
+    if(err){
+      response.status(404);
+    }
+    publishers = res.rows;
+    client.query('SELECT * FROM public.authors',(err,res)=>{
+      if(err){
+        response.status(404);
+      }
+      authors = res.rows;
+      client.query('SELECT * FROM public.genres',(err,res)=>{
+        if(err){
+          response.status(404);
+        }
+        genres = res.rows;
+        console.log(publishers);
+        console.log(authors);
+        console.log(genres);
+        response.status(200).render('add',{publishers:publishers, authors:authors, genres:genres});
+      });
+    });
+  }); 
+ })
 
 app.post('/books/:ISBN',(req,response)=>{
   let newBook = req.body;
   console.log("checking newBook in server");
   console.log(JSON.stringify(newBook));
-
-  let query = {
-    text:'INSERT INTO books (ISBN,BookName,Pages,Price,Stock,NumberSold,Publisher,Cost,PercentSales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-    values:[newBook.isbn, newBook.bookname, newBook.pages, newBook.price, newBook.stock, 0, newBook.publisher, newBook.cost, newBook.psales]
-  }
-
+  
   let authors = newBook.author;
   aArray = authors.split(", ");
-  let aList = [];
-  aArray.forEach(element => {
-    console.log(element);
-    aList.push([newBook.isbn, element]);
-  });
-  let aQuery = `INSERT INTO bookauthors (ISBN,Author) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${aList} AS Author;`
-  
+
   let genres = newBook.genre;
   gArray = genres.split(", ");
-  let gList = [];
-  gArray.forEach(element => {
-    console.log(element);
-    gList.push([newBook.isbn, element]);
-  });
-  let gQuery = `INSERT INTO bookgenres (ISBN,Genres) SELECT ${newBook.isbn} AS ISBN, UNNEST(ARRAY${gList} AS Genres;`
+
+  // query for adding into books relation
+  let query = {
+    text:'INSERT INTO books(isbn,bookname,pages,price,stock,numbersold,publisher,cost,percentsales) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+    values:[newBook.isbn, newBook.bookname, newBook.pages, newBook.price, newBook.stock, 0, newBook.publisher, newBook.cost, newBook.psales],
+  }
 
   console.log("query");
+  
+  // start of books insert
   client.query(query,(err,res)=>{
     if(err){
-      response.status(500);
-      console.log(res);
+      console.log("could not add book to database");
     } else {
       console.log("books added");
-      console.log(res);
-      response.status(200);
-    }
+
+      // start of bookauthors insert
+      aArray.forEach(element => {
+        console.log(element);
+        client.query(`INSERT INTO bookauthors (isbn,author) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
+          if(err){
+            console.log("could not add authors to database");
+          } else {
+
+            console.log("bookauthors: " + element);
+            console.log("author added");
+            // start of bookgenres insert
+            gArray.forEach(element => {
+              console.log(element);
+              client.query(`INSERT INTO bookgenres (isbn,genre) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
+                if(err){
+                  console.log(err);
+                  console.log("could not add genre to database");
+                  response.status(500).send();
+                } else {
+                  console.log("bookgenres: " + element);
+                  console.log("genre added");
+                  console.log("successfully added information to database");
+                  response.status(200).send();
+                } // end of bookgenres insert
+              });
+            });
+
+          } // end of bookauthors insert
+        });
+      });
+
+    } // end of books insert
   })
-  
-  console.log("authors");
-  client.query(aQuery,(err,res)=>{
-    if(err){
-      response.status(500);
-      console.log(res);
-    } else {
-      console.log("authors added");
-      console.log(res);
-      response.status(200);
-    }
-  })
-  
-  console.log("genre");
-  client.query(gQuery,(err,res)=>{
-    if(err){
-      response.status(500);
-      console.log(res);
-    }  else {
-      console.log("genres added");
-      console.log(res);
-      response.status(200);
-    }
-  })
-  console.log("success");
-  response.status(200);
-  response.json({});
 })
 
 

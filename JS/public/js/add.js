@@ -18,7 +18,6 @@ addBtn.onclick = function addBook(){
         let newBook = {'isbn':isbn, 'author':author, 'genre':genre, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher, 'pages':pages,'price':price,'stock':stock,'cost':cost, 'psales':psales};
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() { 
-            console.log("Add New Book");
             if (this.readyState == 4 && this.status == 200) {
                 alert("Success!");
             }

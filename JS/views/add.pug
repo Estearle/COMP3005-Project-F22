@@ -2,7 +2,7 @@ html
     head 
         title Add
     body 
-        include ./headers
+        include ./ownerheaders
         
         h1 Add a new book: 
         p 
@@ -18,12 +18,16 @@ html
             input(type="text",id="price")
             br
             br
-            |Author
-            input(type="text",id="author")
+            |Author: 
+            select
+                each author in authors
+                    option(value = author.author, id="author") #{author.author}
             br
             br
-            |Genre
-            input(type="text",id="genre")
+            |Genre: 
+            select
+                each genre in genres
+                    option(value = genre.genre, id="genre") #{genre.genre}
             br
             br
             |Number of Pages: 
@@ -35,7 +39,9 @@ html
             br
             br
             |Publisher: 
-            input(type="text",id="publisher")
+            select
+                each publisher in publishers
+                    option(value = publisher.name, id="publisher") #{publisher.name}
             br
             br
             |Cost: 
