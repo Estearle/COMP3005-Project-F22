@@ -5,19 +5,18 @@ body
     include ./headers      
     h1 Registration Page 
 
-    button(type="button",id="login") Login
+    button(type="button",id="exist") Existing User 
     |
     |
     |
-    button(type="button",id="register") Register 
+    button(type="button",id="login") Register 
     br
-    button
-    |Username: 
-    input(type="textbox",id="username")
+    |Login Name: 
+    input(type="text",id="login")
     br
     br
     |Password: 
-    input(type="password",id="password")
+    input(type="text",id="password")
 
-    
+    button(type="button",id="submit") Submit
     script(src="../login.js")
