@@ -5,14 +5,6 @@ body
     include ./headers  
     br
     br   
-    strong List Of Books
-    br
-    each book in books
-        input(type='checkbox',name=book.isbn,id=book.isbn) 
-        a(for=book.isbn , href="/books/"+book.isbn ) #{book.bookname}
-        br
-    br
-    
     strong Search
     br
     |Book Name: 
@@ -25,5 +17,17 @@ body
     |Genre: 
     input(type="text",id="genreBook")
     br
-    button(type="button",id="submit") Submit
+    br
+    button(type="button" id="submit") Search
+    br
+    br
+    strong List Of Books
+    br
+    each book in books
+        input(type='checkbox',name=book.isbn,id=book.isbn) 
+        a(for=book.isbn , href="/books/"+book.isbn ) #{book.bookname}
+        br
+    br
+    br
+    button(type="button" id="aCart") Add to Cart
     script(src="../search.js")

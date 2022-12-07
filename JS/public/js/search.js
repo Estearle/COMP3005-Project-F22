@@ -1,5 +1,10 @@
+const { generateKey } = require("crypto");
+
 let addBtn = document.getElementById("add");
-addBtn.onclick = addBook;
+let aCartBtn = document.getElementById("aCart");
+
+if (addBtn != null) addBtn.onclick = addBook;
+if (aCartBtn != null) aCartBtn.onclick = addToCart;
 
 function addBook(){
     let bookName = document.getElementById("bkName").value;
@@ -14,11 +19,13 @@ function addBook(){
 
     //check the input
     //if the input is incorrect, alert the owner
-    if(bookName.length !== 0 && isbn.length === 13 && author.length !== 0 && publisher.length !== 0 && !isNaN(pages) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("pages").value.length !==0){
+    if(bookName.length !== 0 && isbn.length === 13 && author.length !== 0 && genre.length !=0 && publisher.length !== 0 && !isNaN(pages) && !isNaN(price) && !isNaN(stock) && !isNaN(cost) && document.getElementById("price").value.legnth !== 0  && document.getElementById("stock").value.length !==0 && document.getElementById("cost").value.length !==0 && document.getElementById("pages").value.length !==0){
         let newBook = {'isbn':isbn, 'bookname':bookName , 'pages':pages ,'price':price , 'stock':stock , 'publisher':publisher,'pages':pages,'price':price,'stock':stock,'cost':cost};
         let xhttp = new XMLHttpRequest()
         xhttp.onreadystatechange = function() { 
             console.log("Add New Book");
+            console.log(this.readyState);
+            console.log(this.status);
             if (this.readyState == 4 && this.status == 200) {
                 alert("Success!");
             }
@@ -38,6 +45,9 @@ function addBook(){
         if(author.length !== 0){
             errorMsg += "Please enter the name of the author.\n";
         }
+        if(genre.length !== 0){
+            errorMsg += "Please enter the name of the genre.\n";
+        }
         if(publisher.length !== 0){
             errorMsg += "Please enter the name of the publisher.\n";
         }
@@ -56,4 +66,12 @@ function addBook(){
         alert(errorMsg);
         return;
     }
+}
+
+
+function addToCart(){
+    
+    xhttp.open("POST", `/order`);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(order))
 }
