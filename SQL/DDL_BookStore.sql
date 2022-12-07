@@ -30,7 +30,8 @@ create table books
 	 NumberSold		INTEGER,
 	 Publisher		VARCHAR(20) NOT NULL REFERENCES publishers(Name),
 	 Cost			NUMERIC(5,2) NOT NULL,
-	 PercentSales	NUMERIC(3,0)
+	 PercentSales	NUMERIC(3,0),
+	 Restock		BOOLEAN
 	);
 	
 create table orders
@@ -75,3 +76,4 @@ create table bookgenres
 	 foreign key (ISBN) REFERENCES books,
 	 foreign key (Genre) REFERENCES genres
 	);
+	 
