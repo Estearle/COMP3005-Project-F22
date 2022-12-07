@@ -1,0 +1,17 @@
+html 
+    head 
+        title Owner
+body 
+    include ./headers  
+    a(href="/add") Add books
+    h1 Owner's Login Page
+
+    |Login Name: 
+    input(type="text",id="login")
+    br
+    br
+    |Password: 
+    input(type="text",id="password")
+
+    button(type="button",id="submit") Login 
+    script(src="../login.js")

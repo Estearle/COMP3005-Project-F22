@@ -8,20 +8,22 @@ body
     strong List Of Books
     br
     each book in books
-        a(href="/books/"+book.isbn) #{book.bookname}
+        input(type='checkbox',name=book.isbn,id=book.isbn) 
+        a(for=book.isbn , href="/books/"+book.isbn ) #{book.bookname}
         br
     br
+    
     strong Search
     br
     |Book Name: 
-    input(type="text",id="bkName")
+    input(type="text",id="bName")
     |Author name: 
     input(type="text",id="aName")
     br
     |ISBN: 
-    input(type="text",id="isbn")
+    input(type="text",id="isbnBook")
     |Genre: 
-    input(type="text",id="genre")
+    input(type="text",id="genreBook")
     br
     button(type="button",id="submit") Submit
     script(src="../search.js")
