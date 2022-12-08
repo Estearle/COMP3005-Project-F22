@@ -5,19 +5,27 @@ body
     include ./userheaders      
     h1 Registration Page 
 
-    button(type="button",id="login") Login
+    form(action="/login" method="post")
+        |Username: 
+        input(type="text" name="username" required)
+        |    Password:
+        input(type="password" name="password"required)
+        |   
+        button(type="button",id="login") Login
     |
     |
     |
-    button(type="button",id="register") Register 
     br
-    button
+    div#error(style="color:red")
     |Username: 
-    input(type="textbox",id="username")
+    input(type="textbox",id="name")
     br
     br
     |Password: 
-    input(type="password",id="password")
+    input(type="password",id="pass")
+    br
+    br
+    button(type="button",id="register") Register 
 
     
     script(src="../login.js")

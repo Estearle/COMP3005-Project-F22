@@ -1,7 +1,17 @@
-const express = require('express');
-const fs = require("fs");
+import express from 'express';
 const app = express();
+const fs = require("fs");
 const {Pool, Client} = require("pg");
+import session from 'express-session';
+//Setting up the express sessions to be stored in the database
+app.use(session({
+  store: new(require('express-pg-session')(session))(),
+  secret: "top secret key",
+  resave: true,
+  saveUninitialized:false,
+}))
+import logger from 'morgan';
+
 const PORT = process.env.PORT || 3000
 const ROOT_DIR_JS = '/public/js'; //root directory for javascript files
 let books;
@@ -34,8 +44,59 @@ client.connect(function(err) {
 
 //Login Page
 app.get('/',(req,res)=>{
-  res.status(200).render('login');
+  res.status(200).render('login',{session:req.session});
 })
+
+// Saving the user registration to the database.
+app.post("/register", async (req, res) => {
+
+  let newUser = req.body;
+  try{
+      const searchResult = await client.query(`SELECT`)
+      if(searchResult == null) {
+          console.log("registering: " + JSON.stringify(newUser));
+          await User.create(newUser);
+          res.status(200).send();
+      } else {
+          console.log("Send error.");
+          res.status(404).json({'error': 'Exists'});
+      }
+  } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Error registering" });
+  }  
+
+});
+
+// Search the database to match the username and password .
+app.post("/login", async (req, res) => {
+
+let username = req.body.username;
+let password = req.body.password;
+
+  try {
+      const searchResult = await User.findOne({ username: username });
+      if(searchResult != null) { 
+          if(searchResult.password === password) {
+              // If we successfully match the username and password
+              // then set the session properties.  We add these properties
+              // to the session object.
+              req.session.loggedin = true;
+              req.session.username = searchResult.username;
+              req.session.userid = searchResult._id;
+              res.render('pages/home', { session: req.session })
+          } else {
+              res.status(401).send("Not authorized. Invalid password.");
+          }
+      } else {
+          res.status(401).send("Not authorized. Invalid password.");
+      }
+  } catch(err) {
+      console.log(err);
+      res.status(500).json({ error: "Error logging in."});
+  }    
+
+});
 
 // Loads all the books 
 // Search 
@@ -46,13 +107,31 @@ app.get('/books',(req,response)=>{
       console.log(err);
     }
     books = res.rows;
-    //response.status(200).render('books',{books,books});
+    response.status(200).render('books',{books,books});
     for (let book of books){
       book.genre = [];
       book.author = [];
     }
-    //store the corresponding genre and authors
-    //genre and authors can be more than one -> use array to store
+    // store the corresponding genre and authors
+    // genre and authors can be more than one -> use array to store
+    // book genre
+    for (let book of books){
+      client.query(`SELECT genre FROM bookgenres WHERE bookgenres.isbn='${book.isbn}'`, (err, res) => {
+        if (err) {
+          response.status(404);
+          console.log(err);
+        }
+        res.rows.forEach(row => {
+          for (let key in row) {
+            if (!book.genre.includes(row[key])) {
+              book.genre.push(row[key]);
+            }
+          }
+        });
+
+      })
+
+    }
     //book author:
     for (let book of books){
       client.query(`SELECT author FROM bookauthors WHERE bookauthors.isbn='${book.isbn}'`,(err,res)=>{
@@ -64,26 +143,17 @@ app.get('/books',(req,response)=>{
           for(let key in row){
             if(!book.author.includes(row[key])){
               book.author.push(row[key]);
-            }}})})}
-    //book genre
-    for (let book of books){
-        client.query(`SELECT genre FROM bookgenres WHERE bookgenres.isbn='${book.isbn}'`,(err,res)=>{
-        if(err){
-          response.status(404);
-          console.log(err);
-        }
-        res.rows.forEach(row=>{
-          for(let key in row){
-            if(!book.genre.includes(row[key])){
-              book.genre.push(row[key]);
             }
           }
         })
-        console.log(books);  
-        //response.status(200).render('books',{books,books});
+        console.log(books);
       })
     }
-    })})
+            
+    
+  })
+
+  })
 
   
 
@@ -195,7 +265,7 @@ app.post('/books/:ISBN',(req,response)=>{
 
 
 // Cart Page
-app.get('order',(req,res)=>{
+app.get('/order',(req,res)=>{
     res.render('order',{});
 })
 
