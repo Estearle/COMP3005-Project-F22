@@ -10,7 +10,7 @@ app.use(session({
   resave: true,
   saveUninitialized:false,
 }))
-import logger from 'morgan';
+// import logger from 'morgan';
 
 const PORT = process.env.PORT || 3000
 const ROOT_DIR_JS = '/public/js'; //root directory for javascript files
