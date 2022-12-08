@@ -201,7 +201,7 @@ app.post('/books/:ISBN',(req,response)=>{
 
 
 // Cart Page
-app.get('order',(req,res)=>{
+app.get('/order',(req,res)=>{
     res.render('order',{});
 })
 

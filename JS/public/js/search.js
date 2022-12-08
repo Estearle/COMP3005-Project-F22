@@ -2,8 +2,9 @@ let addCart = document.getElementById("addCart");
 addCart.onlick = addCartFunction;
 let search = document.getElementById("search");
 let searchB = document.getElementById("searchB");
-searchB.onclick = searchFunction;
-
+if(searchB !== null) {
+    searchB.onclick = searchFunction;
+}
 
 function addCartFunction(){
 
@@ -44,12 +45,6 @@ function searchFunction(){
         for (let book of bookMatch) {
             for(let i = 0; i < allBooks.length; i++) {
                 let bookInfo = JSON.parse(allBooks[i].name);
-                // console.log("HTML Element: ");
-                // console.log(bookInfo);
-                // console.log("Fileterd Book Element: ");
-                // console.log(book);
-                // console.log("HTML Element Book ISBN: " + bookInfo.isbn);
-                // console.log("Filtered Book ISBN: " + book.isbn);
                 if (bookInfo.isbn == book.isbn){
                     console.log("found matching book!");
                     allBooks[i].style.display = "";
