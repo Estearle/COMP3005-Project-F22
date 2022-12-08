@@ -6,6 +6,8 @@ if(searchB !== null) {
     searchB.onclick = searchFunction;
 }
 
+let cart = [];
+
 function addCartFunction(){
 
 }

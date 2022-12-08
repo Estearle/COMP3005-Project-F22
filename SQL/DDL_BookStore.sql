@@ -39,7 +39,7 @@ create table orders
 	 BillingInfo	VARCHAR(30),
 	 ShippingInfo	VARCHAR(30),
 	 TrackingInfo	CHAR(10),
-	 Customer		VARCHAR(20) NOT NULL REFERENCES customers(ID)
+	 Customer		VARCHAR(20) NOT NULL REFERENCES customers(Uname)
 	);
 
 create table bookorders
