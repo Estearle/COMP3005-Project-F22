@@ -47,7 +47,6 @@ client.connect(function(err) {
   console.log("Server listening on port 3000");
 });
 
-
 //Login Page
 app.get('/',(req,res)=>{
   res.status(200).render('login',);
@@ -93,7 +92,6 @@ let password = req.body.password;
   try {
       const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
       console.log(rows);
-    
       if(rows != null) { 
           if(rows[0].password === password) {
               // If we successfully match the username and password
@@ -118,6 +116,12 @@ let password = req.body.password;
 app.get("/welcome",(req,res)=>{
   res.render("welcome");
 })
+
+//Tracking number
+app.get("/tracking",(req,res)=>{
+  res.render("tracking");
+})
+
 
 // Loads all the books 
 // Search 
