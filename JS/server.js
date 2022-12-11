@@ -386,17 +386,6 @@ app.post("/final", async (req,response) =>{
 })
 
 
-// Reports Pages
-app.get('/report',(req,res)=>{
-  res.render('report',{});
-})
-
-
-// Owner Home Page
-app.get('/owner', (req,res) => {
-  res.render('owner',{});
-})
-
 function generateTracking() {
   let tracking = '';
   let t_length = 10;
@@ -407,3 +396,92 @@ function generateTracking() {
   }
   return tracking;
 }
+
+// Reports Pages
+app.get('/report',(req,res)=>{
+  res.render('report',{});
+})
+
+// Owner Home Page
+app.get('/owner', (req,res) => {
+  res.render('owner',{});
+})
+
+
+//owner login
+app.post("/owner",(req,res)=>{
+  let username = req.body.username;
+  let password = req.body.password;
+  console.log(username + " "+password +" "+JSON.stringify(req.body))
+  try {
+    if(username === "owner") { 
+        if(password === "owner") {
+            req.session.loggedin = true;
+            req.session.username = username;
+            res.render('ownerWelcome')
+        } else {
+            res.status(401).send("Not authorized. Invalid password.");
+        }
+    } else {
+        res.status(401).send("Not authorized. Invalid password.");
+    }
+} catch(err) {
+    console.log(err);
+    res.status(500).json({ error: "Error logging in."});
+}    
+})
+
+//owner's welcome page
+app.get("/ownerWelcome",(req,res)=>{
+  res.render("ownerWelcome");
+})
+//owner logout
+app.get('/ownerlogout',(req,res)=>{
+  if(req.session.loggedin){
+    req.session.loggedin = false;
+  }
+  res.redirect(`/owner`);
+})
+//owner's side
+app.get("/ownerBooks", async(req,response)=>{
+  let {rows} = await client.query('SELECT * FROM public.books');
+  let searchGenre = await client.query('SELECT * FROM bookgenres');
+  let genreResult = searchGenre.rows;
+  let searchAuthor = await client.query('SELECT * FROM bookauthors');
+  let authorResult = searchAuthor.rows;
+  books = rows;
+
+  books.forEach(book => {
+    let genres = [];
+    genreResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        genres.push(element.genre);
+      }
+    })
+    book['genre'] = genres;
+  });
+
+  books.forEach(book => {
+    let authors = [];
+    authorResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        authors.push(element.author);
+      }
+    })
+    book['author'] = authors;
+  });
+  response.status(200).render('ownerbooks',{books:books});  
+})
+
+//DELETE 
+app.delete('/ownerBooks/:id',async(req,res)=>{
+  console.log("DELETE USER");
+  console.log(req.params.id);
+  let isbn = req.params.id;
+  await client.query(`DELETE FROM bookorders WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM bookauthors WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM bookgenres WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM books WHERE isbn='${isbn}'`);
+  console.log("SUCCESS");
+  res.send();
+})

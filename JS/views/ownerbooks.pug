@@ -1,0 +1,18 @@
+html 
+    head 
+        title Books
+body 
+    include ./ownerheaders 
+    br    
+    br
+    br
+    strong List Of Books
+    br
+    div#bookList
+        each book in books
+            div
+                a(href="/books/"+book.isbn) #{book.bookname}
+                input(type="submit",id=book.isbn class="deleteButton" value="Remove")
+                br
+    br
+    script(src="../ownerbooks.js")

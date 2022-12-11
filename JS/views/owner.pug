@@ -4,13 +4,11 @@ html
 body 
     include ./ownerheaders  
     h1 Owner's Login Page
-
-    |Login Name: 
-    input(type="text",id="login")
-    br
-    br
-    |Password: 
-    input(type="text",id="password")
-
-    button(type="button",id="submit") Login 
-    script(src="../login.js")
+    span
+        form(action="/owner" method="post")
+            | Login Name: 
+            input(type="text",name="username")
+            | Password: 
+            input(type="password",name="password")
+            |
+            button(type="submit") Login 
