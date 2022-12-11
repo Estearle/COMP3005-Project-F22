@@ -341,6 +341,13 @@ app.get("/final", async (req,res)=>{
 app.post("/final", async (req,response) =>{
   let info = req.body;
   let books = info["cart"];
+  let genres = [];
+  let authors = [];
+  for (let id in books) {
+    genres = await listGenres(id);
+    authors = await listAuthors(id);
+  }
+  let restock = false;
   console.log(books);
 
   const {rows} = await client.query(`SELECT * FROM public.orders`);
@@ -369,7 +376,7 @@ app.post("/final", async (req,response) =>{
       console.log("order added to database");
       for (let id in books) {
         console.log(id);
-        client.query(`INSERT INTO bookorders(ordernumber, isbn, numbersold) VALUES($1,$2,$3)`,[newOrderNum,id,books[id].add], (err,re)=>{
+        client.query(`INSERT INTO bookorders(ordernumber, isbn, numbersold) VALUES($1,$2,$3)`,[newOrderNum,id,books[id].add], (err,res)=>{
           if(err) {
             console.log("could not add bookorder to database");
           } else {
@@ -378,6 +385,33 @@ app.post("/final", async (req,response) =>{
             console.log(cart);
           }
         })
+        let stock = books[id].stock - books[id].add;
+        if (stock < 20) {
+          restock = true;
+        }
+
+        client.query(`UPDATE books SET (stock = ${stock}, numbersold = numbersold + ${books[id].add}, restock = ${restock}) WHERE isbn = ${id}`, (err, res)=> {
+          if(err) {
+            console.log("failed to update book");
+          }
+        })
+
+
+        for (let i = 0; i < genres.length; i++) {
+          client.query(`UPDATE genres SET sale = sale + ${books[id.add]} WHERE isbn = ${id}`, (err, res)=> {
+            if(err) {
+              console.log("failed to update book");
+            }
+          })
+        }
+
+        for (let i = 0; i < authors.length; i++) {
+          client.query(`UPDATE authors SET sale = sale + ${books[id.add]} WHERE isbn = ${id}`, (err, res)=> {
+            if(err) {
+              console.log("failed to update book");
+            }
+          })
+        }
       };
       response.status(200).send(tracking);
     }
@@ -386,7 +420,7 @@ app.post("/final", async (req,response) =>{
 })
 
 
-function generateTracking() {
+async function generateTracking() {
   let tracking = '';
   let t_length = 10;
   const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -395,6 +429,28 @@ function generateTracking() {
     tracking += (characters.charAt(Math.floor(Math.random()*characters.length)))
   }
   return tracking;
+}
+
+async function listGenres(isbn) {
+  let genres = [];
+  client.query(`SELECT * FROM public.bookgenres WHERE isbn='${isbn}'`,(err,res)=>{
+    if(err){
+      response.status(404);
+    }
+    genres = res.rows;
+  });
+  return genres;
+}
+
+function listAuthors(isbn) {
+  let authors = [];
+  client.query(`SELECT * FROM public.bookauthors WHERE isbn='${isbn}'`,(err,res)=>{
+    if(err){
+      response.status(404);
+    }
+    authors = res.rows;
+  });
+  return authors;
 }
 
 // Reports Pages
