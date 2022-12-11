@@ -103,12 +103,33 @@ let password = req.body.password;
 // Search 
 app.get('/books',async(req,response)=>{
   let {rows} = await client.query('SELECT * FROM public.books');
-  let searchResult = await client.query('SELECT * FROM bookgenres');
-  let genreResult = searchResult.rows;
+  let searchGenre = await client.query('SELECT * FROM bookgenres');
+  let genreResult = searchGenre.rows;
   let searchAuthor = await client.query('SELECT * FROM bookauthors');
+  let authorResult = searchAuthor.rows;
   // console.log(rows);
   books = rows;
-  
+
+  books.forEach(book => {
+    let genres = [];
+    genreResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        genres.push(element.genre);
+      }
+    })
+    book['genre'] = genres;
+  });
+
+  books.forEach(book => {
+    let authors = [];
+    authorResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        authors.push(element.genre);
+      }
+    })
+    book['author'] = authors;
+  });
+  console.log(books);
   response.status(200).render('books',{books:books,genre:genreResult,author:searchAuthor.rows});    
 
 })
