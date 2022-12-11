@@ -101,62 +101,19 @@ let password = req.body.password;
 
 // Loads all the books 
 // Search 
-app.get('/books',(req,response)=>{
-  client.query('SELECT * FROM public.books',(err,res)=>{
-    if(err){
-      response.status(404);
-      console.log(err);
-    }
-    books = res.rows;
-    for (let book of books){
-      book.genre = [];
-      book.author = [];
-    }
-    // store the corresponding genre and authors
-    // genre and authors can be more than one -> use array to store
-    // book genre
-    for (let book of books){
-      client.query(`SELECT genre FROM bookgenres WHERE bookgenres.isbn='${book.isbn}'`, (err, res) => {
-        if (err) {
-          response.status(404);
-          console.log(err);
-        }
-        res.rows.forEach(row => {
-          for (let key in row) {
-            if (!book.genre.includes(row[key])) {
-              book.genre.push(row[key]);
-            }
-          }
-        });
-
-      })
-
-    }
-    //book author:
-    for (let book of books){
-      client.query(`SELECT author FROM bookauthors WHERE bookauthors.isbn='${book.isbn}'`,(err,res)=>{
-        if(err){
-          response.status(404);
-          console.log(err);
-        }
-        res.rows.forEach(row=>{
-          for(let key in row){
-            if(!book.author.includes(row[key])){
-              book.author.push(row[key]);
-            }
-          }
-        })
-        // console.log(books);
-      })
-    }
-    
-    response.status(200).render('books',{books,books});       
-    
-  })
+app.get('/books',async(req,response)=>{
+  let {rows} = await client.query('SELECT * FROM public.books');
+  let searchResult = await client.query('SELECT * FROM bookgenres');
+  let genreResult = searchResult.rows;
+  let searchAuthor = await client.query('SELECT * FROM bookauthors');
+  // console.log(rows);
+  books = rows;
+  
+  response.status(200).render('books',{books:books,genre:genreResult,author:searchAuthor.rows});    
 
 })
 
-  
+
 
 // Specific Book Page
 app.get('/books/:ISBN',(req,response)=>{
