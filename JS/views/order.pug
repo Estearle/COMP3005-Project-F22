@@ -1,9 +1,18 @@
 html 
     head 
-        title Order Summary 
+        title Cart 
 body 
     include ./userheaders 
-    h1 Order Summary
-
+    h1 Cart
+    div#cartList
+        each book in cart
+            div(id=book.isbn)
+                input(type='checkbox',id=book.isbn,name=book,class="item") 
+                a(for=book.isbn ,href="/books/"+book.isbn) #{book.name} 
+                span :
+                input(type='text',id=book.isbn+"_amount",value=book.add)
+                br
+    br
+    button(type="button",id="remove") Remove from Cart
     button(type="button",id="checkout") Submit Order
     script(src="../cart.js")
