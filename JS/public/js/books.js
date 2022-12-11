@@ -1,19 +1,48 @@
-let addCart = document.getElementById("addCart");
-addCart.onlick = addCartFunction;
 let search = document.getElementById("search");
 let searchB = document.getElementById("searchB");
 if(searchB !== null) {
     searchB.onclick = searchFunction;
 }
+let addCartB = document.getElementById("addCart");
+console.log(addCartB);
+if (addCartB !== null) {
+    addCartB.onclick = addCartFunction;
+}
 
-let cart = [];
+let cart = {};
+let item = {};
 
 function addCartFunction(){
-
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() { 
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("Success!");
+            console.log()
+            window.location("/order")
+        }
+    }
+    if (window.location.href == "http://localhost:3000/books") {
+        let allBooks = document.getElementsByClassName("search");
+        for(let i = 0; i < allBooks.length; i++) {
+            if(allBooks[i].checked) {
+                book = JSON.parse(allBooks[i].name);
+                allBooks[i].setAttribute("in_cart", "yes");
+                item = {"isbn": book.isbn, "name": book.bookname, "in_cart": 1, "stock": book.stock};
+                cart[book.isbn] = item;
+            }
+        };
+    } else {
+        let book = JSON.parse(((document.getElementsByTagName("p"))[0].getAttribute("name")));
+        item = {"isbn": book.isbn, "name": book.bookname, "in_cart": 1, "stock": book.stock};
+        cart[book.isbn] = item;
+    }
+    console.log(cart);
+    xhttp.open("POST", `/books`);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(cart));
 }
 
 function searchFunction(){
-    
     console.log("SEARCHING!")
     let search = document.getElementById("search").value;
     if(search.length !== 0){
@@ -60,7 +89,4 @@ function searchFunction(){
         window.location.replace('/books');
         return;
     }
-
-    
- 
 }

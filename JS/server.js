@@ -1,15 +1,16 @@
-import express from 'express';
+// import express from 'express';
+const express = require('express');
 const app = express();
 const fs = require("fs");
 const {Pool, Client} = require("pg");
-import session from 'express-session';
+// import session from 'express-session';
 //Setting up the express sessions to be stored in the database
-app.use(session({
-  store: new(require('express-pg-session')(session))(),
-  secret: "top secret key",
-  resave: true,
-  saveUninitialized:false,
-}))
+// app.use(session({
+//   store: new(require('express-pg-session')(session))(),
+//   secret: "top secret key",
+//   resave: true,
+//   saveUninitialized:false,
+// }))
 // import logger from 'morgan';
 
 const PORT = process.env.PORT || 3000
@@ -107,7 +108,6 @@ app.get('/books',(req,response)=>{
       console.log(err);
     }
     books = res.rows;
-    response.status(200).render('books',{books,books});
     for (let book of books){
       book.genre = [];
       book.author = [];
@@ -146,14 +146,15 @@ app.get('/books',(req,response)=>{
             }
           }
         })
-        console.log(books);
+        // console.log(books);
       })
     }
-            
+    
+    response.status(200).render('books',{books,books});       
     
   })
 
-  })
+})
 
   
 
@@ -230,7 +231,7 @@ app.post('/books/:ISBN',(req,response)=>{
 
       // start of bookauthors insert
       aArray.forEach(element => {
-        console.log(element);
+        // console.log(element);
         client.query(`INSERT INTO bookauthors (isbn,author) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
           if(err){
             console.log("could not add authors to database");
@@ -240,7 +241,7 @@ app.post('/books/:ISBN',(req,response)=>{
             console.log("author added");
             // start of bookgenres insert
             gArray.forEach(element => {
-              console.log(element);
+              // console.log(element);
               client.query(`INSERT INTO bookgenres (isbn,genre) VALUES ($1, $2)`, [newBook.isbn, element], (err, res) => {
                 if(err){
                   console.log(err);
@@ -266,62 +267,35 @@ app.post('/books/:ISBN',(req,response)=>{
 
 // Cart Page
 app.get('/order',(req,res)=>{
-    res.render('order',{});
+  res.render('order',{});
 })
 
 
 // Reports Pages
 app.get('/report',(req,res)=>{
-    res.render('report',{});
+  res.render('report',{});
 })
 
 
 // Owner Home Page
 app.get('/owner', (req,res) => {
-    res.render('owner',{});
+  res.render('owner',{});
 })
 
+let cart = {};
 
-function getBookGenre(isbn) {
-  let getGenres;
-  if (isbn != null) {
-    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${isbn}'`,(err,r)=>{
-      if(err){
-        response.status(404);
-      }
-      getGenres = r.rows;
-      console.log(getGenres);
-      return genre;
-    })
-  }
-  client.query('SELECT * FROM public.bookgenres',(err,res)=>{
-    if(err){
-      response.status(404);
+// Owner Home Page
+app.post('/books', (req,res) => {
+  let orders = req.body;
+  
+  if (orders !== null) {
+    for (let book in orders) {
+      cart[book] = orders[book];
     }
-    getGenres = r.rows;
-    console.log(getGenres);
-    return genre;
-  }) 
-}
-
-function getBookAuthor(isbn) {
-  let getAuthors;
-  if (isbn != null) {
-    client.query(`SELECT genre FROM public.bookauthors WHERE isbn='${isbn}'`,(err,r)=>{
-      if(err){
-        response.status(404);
-      }
-      getAuthors = r.rows;
-      console.log(getAuthors);
-      return genre;
-    })
+    console.log("==========================CART UPDATE==========================")
+    console.log(cart);
+    res.status(200).send(cart);
+  } else {
+    res.status(500).send();
   }
-  client.query('SELECT * FROM public.bookauthors',(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    getAuthors = r.rows;
-    console.log(getGenres);
-    return genre;
-  }) 
-}
+})

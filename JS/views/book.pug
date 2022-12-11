@@ -3,7 +3,7 @@ html
         title #{book[0].bookname} Information
 body 
     include ./userheaders     
-    p
+    p(name=book[0], id=book[0].isbn)
         | Book Name:#{book[0].bookname} 
         br 
         br
@@ -27,6 +27,6 @@ body
         | Publisher:#{book[0].publisher} 
         br
         br
-        button(type="button" id="aCart") Add to Cart
-        script(src="../book.js")
+        button(type="button" id="addCart") Add to Cart
+        script(src="../books.js")
     
