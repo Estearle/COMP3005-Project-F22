@@ -1,0 +1,21 @@
+html 
+    head 
+        title Authors
+body 
+    include ./ownerheaders 
+    h1 Authors Summary 
+    div#dataList
+        each elem in data
+            div(id=elem.author)
+                p(id=elem.author) #{elem.author}
+                |
+                |
+                |
+                #{book.expenses}
+                |
+                |
+                |
+                <!-- #{book.sales} -->
+                br
+                
+    br 

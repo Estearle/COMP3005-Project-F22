@@ -343,7 +343,6 @@ app.post("/final", async (req,response) =>{
   let books = info["cart"];
 
   let restock = false;
-  console.log(books);
 
   const {rows} = await client.query(`SELECT * FROM public.orders`);
   let newOrderNum = parseInt(rows[rows.length-1].ordernumber) + 1;
@@ -358,7 +357,6 @@ app.post("/final", async (req,response) =>{
       }
     }
   } while (unique === false);
-  
   let query = {
     text:'INSERT INTO orders(ordernumber,billinginfo,shippinginfo,trackinginfo,customer) VALUES($1,$2,$3,$4,$5)',
     values:[newOrderNum, info["user"].billinginfo, info["user"].shippinginfo, tracking, info["user"].uname],
@@ -369,6 +367,7 @@ app.post("/final", async (req,response) =>{
       console.log("could not add order to database");
     } else {
       console.log("order added to database");
+      console.log(books);
       for (let id in books) {
         console.log(id);
         client.query(`INSERT INTO bookorders(ordernumber, isbn, numbersold) VALUES($1,$2,$3)`,[newOrderNum,id,books[id].add], (err,res)=>{
@@ -376,46 +375,44 @@ app.post("/final", async (req,response) =>{
             console.log("could not add bookorder to database");
           } else {
             console.log("added ordernumber to database");
-            cart = {};
-            console.log(cart);
           }
         })
         let stock = books[id].stock - books[id].add;
         let sold = books[id].sold + books[id].add;
-        let genres = listGenres(id);
-        let authors = listAuthors(id);
-        console.log(genres);
-        console.log(authors);
+
         if (stock < 20) {
           restock = 'true';
         }
         console.log("===================" + id + "===================");
         console.log("stock: " + stock + " sold: " + sold + " restock: " + restock);
-        client.query(`UPDATE books SET(stock, numbersold, restock) WHERE isbn = ${id} VALUES($1,$2,$3)`, [stock, sold, restock], (err, res)=> {
+        client.query(`UPDATE books SET stock = '${stock}', numbersold = '${sold}', restock = '${restock}' WHERE isbn = '${id}'`, (err, res)=> {
           if(err) {
             console.log("failed to update book");
-            console.log(err);
           } else {
             console.log("updated book")
           }
         })
 
+        let genres = books[id].genre;
+        let authors = books[id].author;    
 
-        // for (let i = 0; i < genres.length; i++) {
-        //   client.query(`UPDATE genres SET sale = ${sold} WHERE genre = ${genres[i].genre}`, (err, res)=> {
-        //     if(err) {
-        //       console.log("failed to update: " + genres[i].genre);
-        //     }
-        //   })
-        // }
+        for (let i = 0; i < genres.length; i++) {
+          client.query(`UPDATE genres SET sales = sales + '${books[id].add}' WHERE genre = '${genres[i]}'`, (err, res)=> {
+            if(err) {
+              console.log("failed to update: " + genres[i]);
+              console.log(err);
+            }
+          })
+        }
 
-        // for (let i = 0; i < authors.length; i++) {
-        //   client.query(`UPDATE authors SET sale = ${sold} WHERE isbn = ${authors[i].author}`, (err, res)=> {
-        //     if(err) {
-        //       console.log("failed to update: " + authors[i].author);
-        //     }
-        //   })
-        // }
+        for (let i = 0; i < authors.length; i++) {
+          client.query(`UPDATE authors SET sales = sales + '${books[id].add}' WHERE author = '${authors[i]}'`, (err, res)=> {
+            if(err) {
+              console.log("failed to update: " + authors[i]);
+              console.log(err);
+            }
+          })
+        }
       };
       response.status(200).send(tracking);
     }
@@ -424,10 +421,10 @@ app.post("/final", async (req,response) =>{
 })
 
 
-async function generateTracking() {
+function generateTracking() {
   let tracking = '';
   let t_length = 10;
-  const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const characters = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
   for (let i = 0; i < t_length; i++) {
     tracking += (characters.charAt(Math.floor(Math.random()*characters.length)))
@@ -435,40 +432,42 @@ async function generateTracking() {
   return tracking;
 }
 
-function listGenres(isbn) {
-  let genres = [];
-  client.query(`SELECT * FROM public.bookgenres WHERE isbn='${isbn}'`,(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    console.log(res.rows);
-    genres = res.rows;
-  });
-  return genres;
-}
-
-function listAuthors(isbn) {
-  let authors = [];
-  client.query(`SELECT * FROM public.bookauthors WHERE isbn='${isbn}'`,(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    console.log(res.rows);
-    authors = res.rows;
-  });
-  return authors;
-}
-
 // Reports Pages
 app.get('/report',(req,res)=>{
   res.render('report',{});
 })
 
+app.get('/finances'), (req,res)=>{
+  let {rows} = client.query('SELECT * FROM public.books');
+  let data = rows;
+  delete data[price];
+  data.forEach(book=> {
+    book["expenses"] = (parseInt(data[stock])+parseInt(data[numbersold]))*parseFloat(data[cost]);
+    book["sales"] = parseInt(data[numbersold])*parseFloat(data[price]);
+    book["publisher_earnings"] = parseFloat(book["sales"])*parseFloat(book["percentsales"])/100;
+    book["profit"] = parseFloat(book["sales"]) - parseFloat(book["publisher_earnings"]) - parseFloat(book["expenses"]);
+  })
+  res.render('finance',{data,data});
+}
+
+app.get('/genres'), (req,res)=>{
+  let {rows} = client.query('SELECT * FROM public.genres');
+  let genres = rows;
+  console.log(genres);
+  res.render('genres',{data:genres});
+}
+
+app.get('/authors'), (req,res)=>{
+  let {rows} = client.query('SELECT * FROM public.authors');
+  let authors = rows;
+  console.log(authors);
+  res.render('authors',{data:authors});
+}
+
 // Owner Home Page
 app.get('/owner', (req,res) => {
   res.render('owner',{});
 })
-
 
 //owner login
 app.post("/owner",(req,res)=>{

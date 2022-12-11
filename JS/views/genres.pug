@@ -1,0 +1,21 @@
+html 
+    head 
+        title Genres
+body 
+    include ./ownerheaders 
+    h1 Genres Summary 
+    div#dataList
+        each elem in data
+            div(id=elem.genre)
+                p(id=elem.genre) #{elem.genre}
+                |
+                |
+                |
+                #{book.expenses}
+                |
+                |
+                |
+                <!-- #{book.sales} -->
+                br
+                
+    br 
