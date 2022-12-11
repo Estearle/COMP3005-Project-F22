@@ -1,1 +1,0 @@
-Currently the js files are empty.

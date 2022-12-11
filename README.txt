@@ -1,26 +1,38 @@
-WILL UPDATE TO PROPER README LATER
-
-Required* and Potential Functionality:
+Required* and Bonus Functionality:
 
 Webpages for following:
 	User:
 	*List of Books
-	*Search
-		*Search Book by any parameter it has
-		Search via approximation
+		*Search
+			*Search Book by any parameter it has
+			Search via approximation
+		*Add to cart - Multiple Book
 	*Specific Book
+		*Add to cart - Single Book/Bulk
 	*Order/Cart Page
+		*Purchase Books
+		*Update Billing/Shipping Information if necessary
 	*Login Page
 	Registration Page
+	*Tracking Information
+	Logout
 		
 	Owner:
-	*Add/Remove Books
+	*Add Books
+	*Remove Books
 	*Display Reports
-
+		*Finances
+		*Authors report
+		*Genres report
 
 Sales Calculation:
-*per Author (just number of sales? or should we also do money?)
-*per Genre (same as author?)
-*Stock/Number Sold per book 
+*per Author
+*per Genre
+*Stock
 	*place order to publisher if Stock < threshold
-*Percent Sales to Publisher (and send to bank account)
+		*adds to stock 
+*Finances
+	*Expenses per book
+	*Sales per book
+	*Publisher Earnings per book
+	*Profit
