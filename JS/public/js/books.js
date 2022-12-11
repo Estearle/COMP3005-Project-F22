@@ -9,6 +9,14 @@ if (addCartB !== null) {
     addCartB.onclick = addCartFunction;
 }
 
+
+let list = document.getElementsByClassName("search");;
+console.log(list);
+for(let i = 0; i < allBooks.length; i++) {
+    
+};
+
+
 let cart = {};
 let item = {};
 
@@ -17,8 +25,8 @@ function addCartFunction(){
     xhttp.onreadystatechange = function() { 
         if (this.readyState == 4 && this.status == 200) {
             console.log("Success!");
-            console.log()
-            window.location("/order")
+            console.log();
+            window.location("/order");
         }
     }
     if (window.location.href == "http://localhost:3000/books") {

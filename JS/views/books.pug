@@ -16,7 +16,7 @@ body
         each book in books
             div(id=book.isbn)
                 input(type='checkbox',name=book,id=book.bookname,class="search") 
-                a(for=book.isbn , href="/books/"+book.isbn ,id=book.isbn ) #{book.bookname}
+                a(for=book.isbn , href="/books/"+book.isbn) #{book.bookname}
                 br
     br
     button(type="button",id="addCart") Add to cart
