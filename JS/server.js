@@ -485,3 +485,12 @@ app.delete('/ownerBooks/:id',async(req,res)=>{
   console.log("SUCCESS");
   res.send();
 })
+
+app.post("/tracking/:trackingnum",async(req,res)=>{
+  console.log("tracking...");
+  let track = req.params.trackingnum;
+  console.log(track);
+  const searchResult = await client.query(`SELECT * FROM orders WHERE TrackingInfo='${track}'`);
+  console.log("SUCCESS:"+JSON.stringify(searchResult.rows));
+  res.json(searchResult.rows);
+})
