@@ -93,20 +93,22 @@ let password = req.body.password;
   try {
       const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
       console.log(rows);
-    
       if(rows != null) { 
-          if(rows[0].password === password) {
-              // If we successfully match the username and password
-              // then set the session properties.  We add these properties
-              // to the session object.
-              req.session.loggedin = true;
-              req.session.username = rows[0].uname;
-              res.redirect('/welcome');
-          } else {
-              res.status(401).send("Not authorized. Invalid password.");
-          }
+        console.log(rows[0]);
+        console.log(rows[0].password);
+        console.log(password);
+        if(rows[0].password === password) {
+            // If we successfully match the username and password
+            // then set the session properties.  We add these properties
+            // to the session object.
+            req.session.loggedin = true;
+            req.session.username = rows[0].uname;
+            res.redirect('/welcome');
+        } else {
+            res.status(401).send("Not authorized. Invalid password.");
+        }
       } else {
-          res.status(401).send("Not authorized. Invalid password.");
+        res.status(401).send("Not authorized. Invalid password.");
       }
   } catch(err) {
       console.log(err);
