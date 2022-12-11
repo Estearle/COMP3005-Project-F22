@@ -146,7 +146,6 @@ app.get('/books',async(req,response)=>{
     })
     book['author'] = authors;
   });
-  console.log(authorResult);
   response.status(200).render('books',{books:books});    
 
 })
@@ -257,6 +256,30 @@ app.post('/books/:ISBN',(req,response)=>{
   })
 })
 
+let cart = {};
+
+// Add to cart post
+app.post('/books', (req,res) => {
+  let orders = req.body;
+  
+  if (orders !== null) {
+    for (let book in orders) {
+      for (item in cart) {
+        if (item.isbn == book.isbn) {
+          item.add += book.add;
+          break;
+        } else {
+          cart[book] = orders[book];
+        }
+      }
+    }
+    console.log("==========================CART UPDATE==========================")
+    console.log(cart);
+    res.status(200).send();
+  } else {
+    res.status(500).send();
+  }
+})
 
 // Cart Page
 app.get('/order',(req,res)=>{
@@ -273,22 +296,4 @@ app.get('/report',(req,res)=>{
 // Owner Home Page
 app.get('/owner', (req,res) => {
   res.render('owner',{});
-})
-
-let cart = {};
-
-// Owner Home Page
-app.post('/books', (req,res) => {
-  let orders = req.body;
-  
-  if (orders !== null) {
-    for (let book in orders) {
-      cart[book] = orders[book];
-    }
-    console.log("==========================CART UPDATE==========================")
-    console.log(cart);
-    res.status(200).send(cart);
-  } else {
-    res.status(500).send();
-  }
 })
