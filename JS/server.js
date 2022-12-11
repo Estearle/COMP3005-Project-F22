@@ -339,3 +339,46 @@ app.get('/report',(req,res)=>{
 app.get('/owner', (req,res) => {
   res.render('owner',{});
 })
+
+app.get("/ownerBooks", async(req,response)=>{
+  let {rows} = await client.query('SELECT * FROM public.books');
+  let searchGenre = await client.query('SELECT * FROM bookgenres');
+  let genreResult = searchGenre.rows;
+  let searchAuthor = await client.query('SELECT * FROM bookauthors');
+  let authorResult = searchAuthor.rows;
+  books = rows;
+
+  books.forEach(book => {
+    let genres = [];
+    genreResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        genres.push(element.genre);
+      }
+    })
+    book['genre'] = genres;
+  });
+
+  books.forEach(book => {
+    let authors = [];
+    authorResult.forEach(element => {
+      if (element.isbn == book.isbn) {
+        authors.push(element.author);
+      }
+    })
+    book['author'] = authors;
+  });
+  response.status(200).render('ownerbooks',{books:books});  
+})
+
+app.delete('/ownerBooks/:id',async(req,res)=>{
+  console.log("DELETE USER");
+  console.log(req.params.id);
+  let isbn = req.params.id;
+  await client.query(`DELETE FROM bookorders WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM bookauthors WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM bookgenres WHERE isbn='${isbn}'`);
+  await client.query(`DELETE FROM books WHERE isbn='${isbn}'`);
+  console.log("SUCCESS");
+  res.send();
+  
+})
