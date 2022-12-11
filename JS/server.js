@@ -376,10 +376,10 @@ app.post("/final", async (req,response) =>{
             console.log("added ordernumber to database");
             cart = {};
             console.log(cart);
-            response.status(200).send(tracking);
           }
         })
       };
+      response.status(200).send(tracking);
     }
   })
   
