@@ -8,12 +8,11 @@ const session = require('express-session');
 
 // import session from 'express-session';
 //Setting up the express sessions to be stored in the database
-// app.use(session({
-//   store: new(require('express-pg-session')(session))(),
-//   secret: "top secret key",
-//   resave: true,
-//   saveUninitialized:false,
-// }))
+app.use(session({
+  secret: "top secret key",
+  resave: true,
+  saveUninitialized:false,
+}))
 const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.urlencoded({extended:true}));
@@ -54,22 +53,24 @@ app.get('/',(req,res)=>{
   res.status(200).render('login',);
 })
 
-
 app.get('/logout',(req,res)=>{
   if(req.session.loggedin){
     req.session.loggedin = false;
   }
   res.redirect(`/`);
 })
+
 // Saving the user registration to the database.
 app.post("/register", async (req, res) => {
-
   let newUser = req.body;
   try{
-      const searchResult = await client.query(`SELECT`)
-      if(searchResult == null) {
+      const searchResult = await client.query(`SELECT * FROM customers WHERE customers.uname='${newUser.username}'`);
+      console.log(searchResult.rows);
+      console.log(searchResult.rows.length)
+      if(searchResult.rows.length === 0) {
           console.log("registering: " + JSON.stringify(newUser));
-          await User.create(newUser);
+          await client.query(`insert into customers values('${newUser.username}','${newUser.password}','${newUser.firstname}','${newUser.lastname}', '${newUser.username}@mail.com' , '${newUser.billing}' , '${newUser.shipping}')`)
+          console.log("DONE");
           res.status(200).send();
       } else {
           console.log("Send error.");
@@ -84,21 +85,23 @@ app.post("/register", async (req, res) => {
 
 // Search the database to match the username and password .
 app.post("/login", async (req, res) => {
+console.log("LOGIN");
 
 let username = req.body.username;
 let password = req.body.password;
 
   try {
-      const searchResult = await User.findOne({ username: username });
-      if(searchResult != null) { 
-          if(searchResult.password === password) {
+      const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
+      console.log(rows);
+    
+      if(rows != null) { 
+          if(rows[0].password === password) {
               // If we successfully match the username and password
               // then set the session properties.  We add these properties
               // to the session object.
               req.session.loggedin = true;
-              req.session.username = searchResult.username;
-              req.session.userid = searchResult._id;
-              res.render('pages/home', { session: req.session })
+              req.session.username = rows[0].uname;
+              res.redirect('/welcome');
           } else {
               res.status(401).send("Not authorized. Invalid password.");
           }
@@ -112,6 +115,10 @@ let password = req.body.password;
 
 });
 
+app.get("/welcome",(req,res)=>{
+  res.render("welcome");
+})
+
 // Loads all the books 
 // Search 
 app.get('/books',async(req,response)=>{
@@ -120,7 +127,6 @@ app.get('/books',async(req,response)=>{
   let genreResult = searchGenre.rows;
   let searchAuthor = await client.query('SELECT * FROM bookauthors');
   let authorResult = searchAuthor.rows;
-  // console.log(rows);
   books = rows;
 
   books.forEach(book => {
@@ -147,8 +153,17 @@ app.get('/books',async(req,response)=>{
 })
 
 // Specific Book Page
-app.get('/books/:ISBN',(req,response)=>{
+app.get('/books/:ISBN',async(req,response)=>{
   let obj_id = req.params.ISBN;
+  let {rows} = await client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`);
+  let b = rows;
+  console.log(b[0]);
+  let searchGenre = await client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`);
+  let genreResult = searchGenre.rows;
+  console.log(genreResult);
+  let searchAuthor = await client.query(`SELECT author FROM bookauthors WHERE isbn='${obj_id}'`);
+  console.log(searchAuthor.rows[0].author);
+
   let book,genre;
   client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
     if(err){
@@ -160,7 +175,7 @@ app.get('/books/:ISBN',(req,response)=>{
         response.status(404);
       }
       genre = r.rows;
-      response.status(200).render('book',{book:book,genre:genre});
+      response.status(200).render('book',{book:b,genre:genre,author:searchAuthor.rows});
     })
   })  
 })

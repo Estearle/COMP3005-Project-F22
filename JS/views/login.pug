@@ -1,31 +1,46 @@
 html 
     head 
-        title Registration Page
-body 
-    include ./userheaders      
-    h1 Registration Page 
-
-    form(action="/login" method="post")
+        title Login Page
+body      
+    h1 Login Page
+    a(href="/register") Register
+    span
+        form(action="/login" method="post")
+            |Username: 
+            input(type="text" name="username" required )
+            |    Password:
+            input(type="password" name="password" required)
+            |   
+            button(type="submit") Login
+    span
+        h1 Register a new user
+        br
+        div#error(style="color:red")
         |Username: 
-        input(type="text" name="username" required )
-        |    Password:
-        input(type="password" name="password" required)
-        |   
-        button(type="button",id="login") Login
-    |
-    |
-    |
-    br
-    div#error(style="color:red")
-    |Username: 
-    input(type="textbox",id="name")
-    br
-    br
-    |Password: 
-    input(type="password",id="pass")
-    br
-    br
-    button(type="button",id="register") Register 
+        input(type="textbox",id="name")
+        br
+        br
+        |Password: 
+        input(type="password",id="pass")
+        br
+        br
+        |First Name: 
+        input(type="textbook",id="first")
+        br
+        br
+        |Last Name: 
+        input(type="textbox",id="last")
+        br
+        br
+        |Billing info: 
+        input(type="textbox",id="billing")
+        br
+        br
+        |Shipping info: 
+        input(type="textbox",id="shipping")
+        br
+        br
+        button(type="button",id="register") Register 
 
     
     script(src="../login.js")
