@@ -10,6 +10,9 @@ body
         | ISBN:#{book[0].isbn}
         br
         br
+        | Author:#{book[0].author}
+        br
+        br
         |Genre:
         ul 
         each g in genre 
@@ -27,6 +30,8 @@ body
         | Publisher:#{book[0].publisher} 
         br
         br
+        | Add amount to cart: 
+        input(type='text',id="add")
         button(type="button" id="addCart") Add to Cart
         script(src="../books.js")
     

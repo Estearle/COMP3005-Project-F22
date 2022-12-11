@@ -1,7 +1,3 @@
-// Register button
-// Change the host to localhost if you are running the server on your own computer.
-let host = ["localhost", "127.0.0.1"];
-
 window.addEventListener('load', () => { 
     document.getElementById("register").onclick = save;
 });

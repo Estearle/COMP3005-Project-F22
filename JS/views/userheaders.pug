@@ -1,11 +1,31 @@
 div#userheaders
-    a(href="/") Login
-    | 
+    //- if(session && session.loggedin)
+    a(href="/") Login 
+    |
+    |
+    |
     |
     a(href="/books") List of Books 
     |
     |
     |
     a(href="/order") Shopping Cart 
+    |
+    |
+    |
+    |
+    |
+    a(href="/logout") Logout
+    //- else 
+    //-     span 
+    //-         a(href="/register") Register 
+    //-     span 
+    //-         form(action="/login" method="post")
+    //-             |Username: 
+    //-             input(type="text" name="username" required)
+    //-             |Password: 
+    //-             input(type="password" name="password" required)
+    //-             |
+    //-             button(type="submit") Login
     
     
