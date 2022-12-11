@@ -3,6 +3,9 @@ const express = require('express');
 const app = express();
 const fs = require("fs");
 const {Pool, Client} = require("pg");
+
+const session = require('express-session');
+
 // import session from 'express-session';
 //Setting up the express sessions to be stored in the database
 // app.use(session({
@@ -11,6 +14,9 @@ const {Pool, Client} = require("pg");
 //   resave: true,
 //   saveUninitialized:false,
 // }))
+const logger = require('morgan');
+app.use(logger('dev'));
+app.use(express.urlencoded({extended:true}));
 // import logger from 'morgan';
 
 const PORT = process.env.PORT || 3000
@@ -45,9 +51,16 @@ client.connect(function(err) {
 
 //Login Page
 app.get('/',(req,res)=>{
-  res.status(200).render('login',{session:req.session});
+  res.status(200).render('login',);
 })
 
+
+app.get('/logout',(req,res)=>{
+  if(req.session.loggedin){
+    req.session.loggedin = false;
+  }
+  res.redirect(`/`);
+})
 // Saving the user registration to the database.
 app.post("/register", async (req, res) => {
 
@@ -112,8 +125,6 @@ app.get('/books',async(req,response)=>{
   response.status(200).render('books',{books:books,genre:genreResult,author:searchAuthor.rows});    
 
 })
-
-
 
 // Specific Book Page
 app.get('/books/:ISBN',(req,response)=>{
