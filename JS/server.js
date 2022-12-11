@@ -130,7 +130,7 @@ app.get('/books',async(req,response)=>{
     book['author'] = authors;
   });
   console.log(books);
-  response.status(200).render('books',{books:books,genre:genreResult,author:searchAuthor.rows});    
+  response.status(200).render('books',{books:books});    
 
 })
 
