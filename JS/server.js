@@ -124,12 +124,12 @@ app.get('/books',async(req,response)=>{
     let authors = [];
     authorResult.forEach(element => {
       if (element.isbn == book.isbn) {
-        authors.push(element.genre);
+        authors.push(element.author);
       }
     })
     book['author'] = authors;
   });
-  console.log(books);
+  console.log(authorResult);
   response.status(200).render('books',{books:books});    
 
 })
