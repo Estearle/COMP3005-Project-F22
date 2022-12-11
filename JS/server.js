@@ -341,12 +341,7 @@ app.get("/final", async (req,res)=>{
 app.post("/final", async (req,response) =>{
   let info = req.body;
   let books = info["cart"];
-  let genres = [];
-  let authors = [];
-  for (let id in books) {
-    genres = await listGenres(id);
-    authors = await listAuthors(id);
-  }
+
   let restock = false;
   console.log(books);
 
@@ -386,32 +381,41 @@ app.post("/final", async (req,response) =>{
           }
         })
         let stock = books[id].stock - books[id].add;
+        let sold = books[id].sold + books[id].add;
+        let genres = listGenres(id);
+        let authors = listAuthors(id);
+        console.log(genres);
+        console.log(authors);
         if (stock < 20) {
-          restock = true;
+          restock = 'true';
         }
-
-        client.query(`UPDATE books SET (stock = ${stock}, numbersold = numbersold + ${books[id].add}, restock = ${restock}) WHERE isbn = ${id}`, (err, res)=> {
+        console.log("===================" + id + "===================");
+        console.log("stock: " + stock + " sold: " + sold + " restock: " + restock);
+        client.query(`UPDATE books SET(stock, numbersold, restock) WHERE isbn = ${id} VALUES($1,$2,$3)`, [stock, sold, restock], (err, res)=> {
           if(err) {
             console.log("failed to update book");
+            console.log(err);
+          } else {
+            console.log("updated book")
           }
         })
 
 
-        for (let i = 0; i < genres.length; i++) {
-          client.query(`UPDATE genres SET sale = sale + ${books[id.add]} WHERE isbn = ${id}`, (err, res)=> {
-            if(err) {
-              console.log("failed to update book");
-            }
-          })
-        }
+        // for (let i = 0; i < genres.length; i++) {
+        //   client.query(`UPDATE genres SET sale = ${sold} WHERE genre = ${genres[i].genre}`, (err, res)=> {
+        //     if(err) {
+        //       console.log("failed to update: " + genres[i].genre);
+        //     }
+        //   })
+        // }
 
-        for (let i = 0; i < authors.length; i++) {
-          client.query(`UPDATE authors SET sale = sale + ${books[id.add]} WHERE isbn = ${id}`, (err, res)=> {
-            if(err) {
-              console.log("failed to update book");
-            }
-          })
-        }
+        // for (let i = 0; i < authors.length; i++) {
+        //   client.query(`UPDATE authors SET sale = ${sold} WHERE isbn = ${authors[i].author}`, (err, res)=> {
+        //     if(err) {
+        //       console.log("failed to update: " + authors[i].author);
+        //     }
+        //   })
+        // }
       };
       response.status(200).send(tracking);
     }
@@ -431,12 +435,13 @@ async function generateTracking() {
   return tracking;
 }
 
-async function listGenres(isbn) {
+function listGenres(isbn) {
   let genres = [];
   client.query(`SELECT * FROM public.bookgenres WHERE isbn='${isbn}'`,(err,res)=>{
     if(err){
       response.status(404);
     }
+    console.log(res.rows);
     genres = res.rows;
   });
   return genres;
@@ -448,6 +453,7 @@ function listAuthors(isbn) {
     if(err){
       response.status(404);
     }
+    console.log(res.rows);
     authors = res.rows;
   });
   return authors;

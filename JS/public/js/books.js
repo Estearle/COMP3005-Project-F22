@@ -34,11 +34,12 @@ function addCartFunction(){
         for(let i = 0; i < allBooks.length; i++) {
             if(allBooks[i].checked) {
                 let book = JSON.parse(allBooks[i].name);
+                console.log(book);
                 if (allBooks[i].getAttribute("in_cart") == "yes") {
                     // increase "in_cart" attribute by 1;
                 } else {
                     allBooks[i].setAttribute("in_cart", "yes");
-                    item = {"isbn": book.isbn, "name": book.bookname, "add": 1, "stock": book.stock, "sold": book.sold};
+                    item = {"isbn": book.isbn, "name": book.bookname, "add": 1, "stock": book.stock, "sold": book.numbersold};
                     cart[book.isbn] = item;
                 }
                 
@@ -47,7 +48,7 @@ function addCartFunction(){
     } else {
         let book = JSON.parse(((document.getElementsByTagName("p"))[0].getAttribute("name")));
         let amount = document.getElementById("add").value;
-        item = {"isbn": book.isbn, "name": book.bookname, "add": parseInt(amount), "stock": book.stock, "sold": book.sold};
+        item = {"isbn": book.isbn, "name": book.bookname, "add": parseInt(amount), "stock": book.stock, "sold": book.numbersold};
         cart[book.isbn] = item;
     }
     console.log(cart);
