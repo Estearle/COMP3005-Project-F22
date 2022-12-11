@@ -33,8 +33,7 @@ function addCartFunction(){
         let allBooks = document.getElementsByClassName("search");
         for(let i = 0; i < allBooks.length; i++) {
             if(allBooks[i].checked) {
-                book = JSON.parse(allBooks[i].name);
-                console.log()
+                let book = JSON.parse(allBooks[i].name);
                 if (allBooks[i].getAttribute("in_cart") == "yes") {
                     // increase "in_cart" attribute by 1;
                 } else {
@@ -47,7 +46,8 @@ function addCartFunction(){
         };
     } else {
         let book = JSON.parse(((document.getElementsByTagName("p"))[0].getAttribute("name")));
-        item = {"isbn": book.isbn, "name": book.bookname, "add": 1, "stock": book.stock};
+        let amount = document.getElementById("add").value;
+        item = {"isbn": book.isbn, "name": book.bookname, "add": parseInt(amount), "stock": book.stock};
         cart[book.isbn] = item;
     }
     console.log(cart);

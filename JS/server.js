@@ -93,18 +93,21 @@ let password = req.body.password;
       const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
       console.log(rows);
       if(rows != null) { 
-          if(rows[0].password === password) {
-              // If we successfully match the username and password
-              // then set the session properties.  We add these properties
-              // to the session object.
-              req.session.loggedin = true;
-              req.session.username = rows[0].uname;
-              res.redirect('/welcome');
-          } else {
-              res.status(401).send("Not authorized. Invalid password.");
-          }
+        console.log(rows[0]);
+        console.log(rows[0].password);
+        console.log(password);
+        if(rows[0].password === password) {
+            // If we successfully match the username and password
+            // then set the session properties.  We add these properties
+            // to the session object.
+            req.session.loggedin = true;
+            req.session.username = rows[0].uname;
+            res.redirect('/welcome');
+        } else {
+            res.status(401).send("Not authorized. Invalid password.");
+        }
       } else {
-          res.status(401).send("Not authorized. Invalid password.");
+        res.status(401).send("Not authorized. Invalid password.");
       }
   } catch(err) {
       console.log(err);
@@ -181,7 +184,6 @@ app.get('/books/:ISBN',async(req,response)=>{
       genre = r.rows;
       response.status(200).render('book',{book:b,genre:genre,author:searchAuthor.rows});
     })
-    
   })  
 })
   
@@ -276,21 +278,24 @@ let cart = {};
 // Add to cart post
 app.post('/books', (req,res) => {
   let orders = req.body;
-  
+  let response = "";
+  let stock = false;
   if (orders !== null) {
     for (let book in orders) {
-      for (item in cart) {
-        if (item.isbn == book.isbn) {
-          item.add += book.add;
-          break;
-        } else {
-          cart[book] = orders[book];
-        }
+      if (!cart.hasOwnProperty(book)) {
+        cart[book] = orders[book];
+      } else if (cart[book].add + orders[book].add > stock) {
+        response = "Could not add an item to cart due to exceeding stock number, please check your order again";
+        stock = true;
+      } else {
+        cart[book].add += orders[book].add;
       }
     }
     console.log("==========================CART UPDATE==========================")
     console.log(cart);
     res.status(200).send();
+  } else if (stock) {
+    res.status(400).send(response);
   } else {
     res.status(500).send();
   }
@@ -298,9 +303,31 @@ app.post('/books', (req,res) => {
 
 // Cart Page
 app.get('/order',(req,res)=>{
-  res.render('order',{});
+  res.render('order',{cart:cart});
 })
 
+app.post('/order', (req,res)=>{
+  let final_cart = req.body;
+  if (final_cart !== null) {
+    cart = final_cart;
+    console.log("==========================CART SUBMIT==========================")
+    console.log(cart);
+    res.status(200).send();
+  } else {
+    res.status(500).send();
+  }
+})
+
+app.put('/order', (req,res)=>{
+  let del_list = req.body;
+  if (del_list !== null) {
+    for (let item in del_list) {
+      delete cart[item];
+    }
+    console.log(cart);
+  }
+  res.render('order',{cart:cart})
+})
 
 // Reports Pages
 app.get('/report',(req,res)=>{
