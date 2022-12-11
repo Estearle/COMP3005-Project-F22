@@ -1,0 +1,34 @@
+html 
+    head 
+        title Cart 
+body 
+    include ./userheaders 
+    h1 Finalize Order
+    div#cartList
+        each book in cart
+            div(id=book.isbn, class="book", name=book)
+                a(for=book.isbn ,href="/books/"+book.isbn) #{book.name} 
+                span x#{book.add}
+                br
+    br
+    div#tracking
+        p(name=info, id="user")
+        | First Name:#{info.fname} 
+        br 
+        br
+        | Last Name:#{info.lname}
+        br
+        br
+        | E-mail:#{info.email}
+        br
+        br
+        | Billing Info:
+        input(type='text',id=billing,value=info.billinginfo)
+        br
+        br
+        | Shipping Info:
+        input(type='text',id=shipping,value=info.shippinginfo)
+        br
+        br
+    button(type="button",id="order") Finalize Order
+    script(src="../final.js")

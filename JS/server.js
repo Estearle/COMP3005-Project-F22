@@ -92,10 +92,7 @@ let password = req.body.password;
   try {
       const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
       console.log(rows);
-      if(rows != null) { 
-        console.log(rows[0]);
-        console.log(rows[0].password);
-        console.log(password);
+      if(rows != null) {
         if(rows[0].password === password) {
             // If we successfully match the username and password
             // then set the session properties.  We add these properties
@@ -329,6 +326,66 @@ app.put('/order', (req,res)=>{
   res.render('order',{cart:cart})
 })
 
+app.get("/final", async (req,res)=>{
+  const {rows} = await client.query(`SELECT * FROM public.customers WHERE customers.uname='${req.session.username}'`);
+  if(rows != null) {
+    let info = rows[0];
+    delete info['password'];
+    console.log(info);
+    res.render("final", {cart:cart,info:info});
+  } else {
+    res.status(500).send();
+  }
+})
+
+app.post("/final", async (req,response) =>{
+  let info = req.body;
+  let books = info["cart"];
+  console.log(books);
+
+  const {rows} = await client.query(`SELECT * FROM public.orders`);
+  let newOrderNum = parseInt(rows[rows.length-1].ordernumber) + 1;
+
+  let tracking = '';
+  let unique = true;
+  do {
+    tracking = generateTracking(10);
+    for (let i = 0; i < rows.length-1; i++) {
+      if(tracking === rows[i].trackinginfo) {
+        unique = false;
+      }
+    }
+  } while (unique === false);
+  
+  let query = {
+    text:'INSERT INTO orders(ordernumber,billinginfo,shippinginfo,trackinginfo,customer) VALUES($1,$2,$3,$4,$5)',
+    values:[newOrderNum, info["user"].billinginfo, info["user"].shippinginfo, tracking, info["user"].uname],
+  }
+
+  client.query(query,(err,res)=>{
+    if(err){
+      console.log("could not add order to database");
+    } else {
+      console.log("order added to database");
+      for (let id in books) {
+        console.log(id);
+        client.query(`INSERT INTO bookorders(ordernumber, isbn, numbersold) VALUES($1,$2,$3)`,[newOrderNum,id,books[id].add], (err,re)=>{
+          if(err) {
+            console.log("could not add bookorder to database");
+          } else {
+            console.log("added ordernumber to database");
+            cart = {};
+            console.log(cart);
+            response.status(200).send(tracking);
+          }
+        })
+      };
+    }
+  })
+  
+})
+
+
 // Reports Pages
 app.get('/report',(req,res)=>{
   res.render('report',{});
@@ -339,3 +396,14 @@ app.get('/report',(req,res)=>{
 app.get('/owner', (req,res) => {
   res.render('owner',{});
 })
+
+function generateTracking() {
+  let tracking = '';
+  let t_length = 10;
+  const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+  for (let i = 0; i < t_length; i++) {
+    tracking += (characters.charAt(Math.floor(Math.random()*characters.length)))
+  }
+  return tracking;
+}
