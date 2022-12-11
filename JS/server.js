@@ -53,22 +53,24 @@ app.get('/',(req,res)=>{
   res.status(200).render('login',);
 })
 
-
 app.get('/logout',(req,res)=>{
   if(req.session.loggedin){
     req.session.loggedin = false;
   }
   res.redirect(`/`);
 })
+
 // Saving the user registration to the database.
 app.post("/register", async (req, res) => {
-
   let newUser = req.body;
   try{
-      const searchResult = await client.query(`SELECT`)
-      if(searchResult == null) {
+      const searchResult = await client.query(`SELECT * FROM customers WHERE customers.uname='${newUser.username}'`);
+      console.log(searchResult.rows);
+      console.log(searchResult.rows.length)
+      if(searchResult.rows.length === 0) {
           console.log("registering: " + JSON.stringify(newUser));
-          await User.create(newUser);
+          await client.query(`insert into customers values('${newUser.username}','${newUser.password}','${newUser.firstname}','${newUser.lastname}', '${newUser.username}@mail.com' , '${newUser.billing}' , '${newUser.shipping}')`)
+          console.log("DONE");
           res.status(200).send();
       } else {
           console.log("Send error.");
@@ -151,8 +153,17 @@ app.get('/books',async(req,response)=>{
 })
 
 // Specific Book Page
-app.get('/books/:ISBN',(req,response)=>{
+app.get('/books/:ISBN',async(req,response)=>{
   let obj_id = req.params.ISBN;
+  let {rows} = await client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`);
+  let b = rows;
+  console.log(b[0]);
+  let searchGenre = await client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`);
+  let genreResult = searchGenre.rows;
+  console.log(genreResult);
+  let searchAuthor = await client.query(`SELECT author FROM bookauthors WHERE isbn='${obj_id}'`);
+  console.log(searchAuthor.rows[0].author);
+
   let book,genre;
   client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
     if(err){
@@ -164,7 +175,7 @@ app.get('/books/:ISBN',(req,response)=>{
         response.status(404);
       }
       genre = r.rows;
-      response.status(200).render('book',{book:book,genre:genre});
+      response.status(200).render('book',{book:b,genre:genre,author:searchAuthor.rows});
     })
     
   })  

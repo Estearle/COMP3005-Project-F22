@@ -1,8 +1,9 @@
 html 
     head 
-        title Registration Page
+        title Login Page
 body      
-    h1 Registration Page 
+    h1 Login Page
+    a(href="/register") Register
     span
         form(action="/login" method="post")
             |Username: 
@@ -12,6 +13,7 @@ body
             |   
             button(type="submit") Login
     span
+        h1 Register a new user
         br
         div#error(style="color:red")
         |Username: 
@@ -20,6 +22,22 @@ body
         br
         |Password: 
         input(type="password",id="pass")
+        br
+        br
+        |First Name: 
+        input(type="textbook",id="first")
+        br
+        br
+        |Last Name: 
+        input(type="textbox",id="last")
+        br
+        br
+        |Billing info: 
+        input(type="textbox",id="billing")
+        br
+        br
+        |Shipping info: 
+        input(type="textbox",id="shipping")
         br
         br
         button(type="button",id="register") Register 

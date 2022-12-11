@@ -10,9 +10,12 @@ body
         | ISBN:#{book[0].isbn}
         br
         br
-        | Author:#{book[0].author}
-        br
-        br
+        | Author:
+        ul 
+        each a in author 
+            li #{a.author} 
+            br
+        
         |Genre:
         ul 
         each g in genre 

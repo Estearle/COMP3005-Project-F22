@@ -2,17 +2,18 @@ window.addEventListener('load', () => {
     document.getElementById("register").onclick = save;
 });
 
-function login(){
-
-}
 function save(){
     
 	document.getElementById("error").innerHTML = "";
 	let name = document.getElementById("name").value;
 	let pass = document.getElementById("pass").value;
-	let newUser = { username: name, password: pass };
+    let first = document.getElementById("first").value;
+    let last= document.getElementById("last").value;
+    let shipping = document.getElementById("shipping").value;
+    let billing = document.getElementById("billing").value;
+	let newUser = { username: name, password: pass,firstname:first,lastname:last,"shipping":shipping,"billing":billing};
 	
-	fetch(`http://${host[0]}:3000/register`, {
+	fetch(`http://localhost:3000/register`, {
         method: 'POST', 
         headers: {
             'Content-Type': 'application/json'
@@ -28,7 +29,8 @@ function save(){
 			document.getElementById("pass").value = '';
 			document.getElementById("error").innerHTML = "That username is taken. Please use a different username.";
         } else {
-			location.href=`http://${host[0]}:3000/`;
+            alert("You have registered!")
+			location.href=`http://localhost:3000/`;
 		}
     })
     // Catch any errors that might happen, and display a message.
