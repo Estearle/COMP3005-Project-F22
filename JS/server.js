@@ -8,12 +8,11 @@ const session = require('express-session');
 
 // import session from 'express-session';
 //Setting up the express sessions to be stored in the database
-// app.use(session({
-//   store: new(require('express-pg-session')(session))(),
-//   secret: "top secret key",
-//   resave: true,
-//   saveUninitialized:false,
-// }))
+app.use(session({
+  secret: "top secret key",
+  resave: true,
+  saveUninitialized:false,
+}))
 const logger = require('morgan');
 app.use(logger('dev'));
 app.use(express.urlencoded({extended:true}));
@@ -84,21 +83,23 @@ app.post("/register", async (req, res) => {
 
 // Search the database to match the username and password .
 app.post("/login", async (req, res) => {
+console.log("LOGIN");
 
 let username = req.body.username;
 let password = req.body.password;
 
   try {
-      const searchResult = await User.findOne({ username: username });
-      if(searchResult != null) { 
-          if(searchResult.password === password) {
+      const {rows} = await client.query(`SELECT * FROM customers WHERE customers.uname='${username}'`);
+      console.log(rows);
+    
+      if(rows != null) { 
+          if(rows[0].password === password) {
               // If we successfully match the username and password
               // then set the session properties.  We add these properties
               // to the session object.
               req.session.loggedin = true;
-              req.session.username = searchResult.username;
-              req.session.userid = searchResult._id;
-              res.render('pages/home', { session: req.session })
+              req.session.username = rows[0].uname;
+              res.redirect('/welcome');
           } else {
               res.status(401).send("Not authorized. Invalid password.");
           }
@@ -112,6 +113,10 @@ let password = req.body.password;
 
 });
 
+app.get("/welcome",(req,res)=>{
+  res.render("welcome");
+})
+
 // Loads all the books 
 // Search 
 app.get('/books',async(req,response)=>{
@@ -120,7 +125,6 @@ app.get('/books',async(req,response)=>{
   let genreResult = searchGenre.rows;
   let searchAuthor = await client.query('SELECT * FROM bookauthors');
   let authorResult = searchAuthor.rows;
-  // console.log(rows);
   books = rows;
 
   books.forEach(book => {

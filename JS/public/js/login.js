@@ -2,6 +2,9 @@ window.addEventListener('load', () => {
     document.getElementById("register").onclick = save;
 });
 
+function login(){
+
+}
 function save(){
     
 	document.getElementById("error").innerHTML = "";
