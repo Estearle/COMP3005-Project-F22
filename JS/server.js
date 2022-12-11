@@ -47,6 +47,8 @@ client.connect(function(err) {
   console.log("Server listening on port 3000");
 });
 
+let first = true;
+
 //Login Page
 app.get('/',(req,res)=>{
   res.status(200).render('login',);
@@ -97,6 +99,7 @@ let password = req.body.password;
             // If we successfully match the username and password
             // then set the session properties.  We add these properties
             // to the session object.
+            first = false;
             req.session.loggedin = true;
             req.session.username = rows[0].uname;
             res.redirect('/welcome');
@@ -114,11 +117,17 @@ let password = req.body.password;
 });
 
 app.get("/welcome",(req,res)=>{
+  if (first) {
+    res.redirect(`/`);
+  }
   res.render("welcome");
 })
 
 //Tracking number
 app.get("/tracking",(req,res)=>{
+  if (first) {
+    res.redirect(`/`);
+  }
   res.render("tracking");
 })
 
@@ -126,6 +135,9 @@ app.get("/tracking",(req,res)=>{
 // Loads all the books 
 // Search 
 app.get('/books',async(req,response)=>{
+  if (first) {
+    response.redirect(`/`);
+  }
   let {rows} = await client.query('SELECT * FROM public.books');
   let searchGenre = await client.query('SELECT * FROM bookgenres');
   let genreResult = searchGenre.rows;
@@ -158,6 +170,9 @@ app.get('/books',async(req,response)=>{
 
 // Specific Book Page
 app.get('/books/:ISBN',async(req,response)=>{
+  if (first) {
+    response.redirect(`/`);
+  }
   let obj_id = req.params.ISBN;
   let {rows} = await client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`);
   let b = rows;
@@ -199,6 +214,9 @@ app.put('/books/:ISBN',async(req,response)=>{
 
 // Add Book Page
 app.get("/add",(req,response)=>{
+  if (first) {
+    response.redirect(`/`);
+  }
   let publishers, authors, genres;
   client.query('SELECT * FROM public.publishers',(err,res)=>{
     if(err){
@@ -313,6 +331,9 @@ app.post('/books', (req,res) => {
 
 // Cart Page
 app.get('/order',(req,res)=>{
+  if (first) {
+    res.redirect(`/`);
+  }
   res.render('order',{cart:cart});
 })
 
@@ -340,6 +361,9 @@ app.put('/order', (req,res)=>{
 })
 
 app.get("/final", async (req,res)=>{
+  if (first) {
+    res.redirect(`/`);
+  }
   const {rows} = await client.query(`SELECT * FROM public.customers WHERE customers.uname='${req.session.username}'`);
   if(rows != null) {
     let info = rows[0];
