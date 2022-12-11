@@ -1,0 +1,34 @@
+html 
+    head 
+        title Finances
+body 
+    include ./ownerheaders 
+    h1 Financial Report
+    br
+    div#bookList
+        each book in data
+            div(id=book.isbn)
+                p(href="/books/"+book.isbn) #{book.bookname}
+                |
+                |
+                |
+                | #{book.expenses}
+                |
+                |
+                |
+                | #{book.sales}
+                |
+                |
+                |
+                | #{book.publisher_earnings}
+                |
+                |
+                |
+                | #{book.profit}
+                |
+                |
+                |
+                button(type="button",id=book.isbn,class="restock",stock='#{book.stock}',publisher='#{book.publisher}',style="display: hidden;") Restock: #{book.stock}
+                br
+    br
+    script(src="../finances.js")

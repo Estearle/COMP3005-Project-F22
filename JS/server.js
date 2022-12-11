@@ -184,6 +184,19 @@ app.get('/books/:ISBN',async(req,response)=>{
   })  
 })
   
+app.put('/books/:ISBN',async(req,response)=>{
+  let isbn = req.body;
+  client.query(`UPDATE books SET stock = stock + 20 WHERE isbn = '${isbn}'`, (err, res)=> {
+    if(err) {
+      console.log("failed to update: " + isbn);
+      console.log(err);
+    } else {
+      console.log("Added 20 books to stock of: " + isbn);
+      response.status(200).send("Added 20 books to stock of: " + isbn);
+    }
+  })
+})
+
 // Add Book Page
 app.get("/add",(req,response)=>{
   let publishers, authors, genres;
@@ -397,7 +410,7 @@ app.post("/final", async (req,response) =>{
         let authors = books[id].author;    
 
         for (let i = 0; i < genres.length; i++) {
-          client.query(`UPDATE genres SET sales = sales + '${books[id].add}' WHERE genre = '${genres[i]}'`, (err, res)=> {
+          client.query(`UPDATE genres SET sales = sales + '${books[id].add}', totalsales = totalsales + '${books[id].add * books[id].price}' WHERE genre = '${genres[i]}'`, (err, res)=> {
             if(err) {
               console.log("failed to update: " + genres[i]);
               console.log(err);
@@ -406,7 +419,7 @@ app.post("/final", async (req,response) =>{
         }
 
         for (let i = 0; i < authors.length; i++) {
-          client.query(`UPDATE authors SET sales = sales + '${books[id].add}' WHERE author = '${authors[i]}'`, (err, res)=> {
+          client.query(`UPDATE authors SET sales = sales + '${books[id].add}', totalsales = totalsales + '${books[id].add * books[id].price}' WHERE author = '${authors[i]}'`, (err, res)=> {
             if(err) {
               console.log("failed to update: " + authors[i]);
               console.log(err);
@@ -433,11 +446,11 @@ function generateTracking() {
 }
 
 // Reports Pages
-app.get('/report',(req,res)=>{
+app.get("/report",(req,res)=>{
   res.render('report',{});
 })
 
-app.get('/finances'), (req,res)=>{
+app.get("/finances"), (req,res)=>{
   let {rows} = client.query('SELECT * FROM public.books');
   let data = rows;
   delete data[price];
@@ -447,17 +460,17 @@ app.get('/finances'), (req,res)=>{
     book["publisher_earnings"] = parseFloat(book["sales"])*parseFloat(book["percentsales"])/100;
     book["profit"] = parseFloat(book["sales"]) - parseFloat(book["publisher_earnings"]) - parseFloat(book["expenses"]);
   })
-  res.render('finance',{data,data});
+  res.render('finances',{data,data});
 }
 
-app.get('/genres'), (req,res)=>{
+app.get("/genres"), (req,res)=>{
   let {rows} = client.query('SELECT * FROM public.genres');
   let genres = rows;
   console.log(genres);
   res.render('genres',{data:genres});
 }
 
-app.get('/authors'), (req,res)=>{
+app.get("/authors"), (req,res)=>{
   let {rows} = client.query('SELECT * FROM public.authors');
   let authors = rows;
   console.log(authors);

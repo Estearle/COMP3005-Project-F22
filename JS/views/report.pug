@@ -5,9 +5,11 @@ body
     include ./ownerheaders 
     h1 Report Summary 
 
-    select(name="report",id="report")
-        option Please Select a Report
-        option(value="genre") Genre
-        option(value="author") Author 
-        option(value="finance") Finance 
-    script(src="../report.js")
+    p Please Select a Report:
+    br
+    a(href="/finances") Finances
+    br
+    a(href="/genres") Genres
+    br
+    a(href="/authors") Authors
+    br

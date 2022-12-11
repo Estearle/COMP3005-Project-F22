@@ -9,14 +9,6 @@ if (addCartB !== null) {
     addCartB.onclick = addCartFunction;
 }
 
-
-let list = document.getElementsByClassName("search");;
-console.log(list);
-// for(let i = 0; i < allBooks.length; i++) {
-    
-// };
-
-
 let cart = {};
 let item = {};
 
@@ -39,7 +31,14 @@ function addCartFunction(){
                     // increase "in_cart" attribute by 1;
                 } else {
                     allBooks[i].setAttribute("in_cart", "yes");
-                    item = {"isbn": book.isbn, "name": book.bookname, "add": 1, "stock": parseInt(book.stock), "sold": parseInt(book.numbersold), "genre": book.genre, "author": book.author};
+                    item = {"isbn": book.isbn, 
+                            "name": book.bookname, 
+                            "add": 1, 
+                            "stock": parseInt(book.stock), 
+                            "sold": parseInt(book.numbersold), 
+                            "genre": book.genre, 
+                            "author": book.author, 
+                            "price": parseFloat(book.price)};
                     cart[book.isbn] = item;
                 }
                 
@@ -48,7 +47,14 @@ function addCartFunction(){
     } else {
         let book = JSON.parse(((document.getElementsByTagName("p"))[0].getAttribute("name")));
         let amount = document.getElementById("add").value;
-        item = {"isbn": book.isbn, "name": book.bookname, "add": parseInt(amount), "stock": parseInt(book.stock), "sold": parseInt(book.numbersold), "genre": book.genre, "author": book.author};
+        item = {"isbn": book.isbn, 
+                "name": book.bookname, 
+                "add": parseInt(amount), 
+                "stock": parseInt(book.stock), 
+                "sold": parseInt(book.numbersold), 
+                "genre": book.genre, 
+                "author": book.author, 
+                "price": parseFloat(book.price)};
         cart[book.isbn] = item;
     }
     console.log(cart);

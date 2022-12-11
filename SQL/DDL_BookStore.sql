@@ -53,12 +53,14 @@ create table bookorders
 
 create table authors
 	(Author			VARCHAR(30) NOT NULL UNIQUE PRIMARY KEY,
-	 Sales			INTEGER
+	 Sales			INTEGER,
+	 TotalSales		NUMERIC(8,2)
 	);
 	
 create table genres
 	(Genre			VARCHAR(15) NOT NULL UNIQUE PRIMARY KEY,
-	 Sales			INTEGER
+	 Sales			INTEGER,
+	 TotalSales		NUMERIC(8,2)
 	);
 	
 create table bookauthors
