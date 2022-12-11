@@ -10,6 +10,7 @@ Webpages for following:
 	*Specific Book
 		*Add to cart - Single Book/Bulk
 	*Order/Cart Page
+		Modify Cart
 		*Purchase Books
 		*Update Billing/Shipping Information if necessary
 	*Login Page
