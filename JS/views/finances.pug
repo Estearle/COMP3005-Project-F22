@@ -8,27 +8,28 @@ body
     div#bookList
         each book in data
             div(id=book.isbn)
-                p(href="/books/"+book.isbn) #{book.bookname}
+                a(href="/books/"+book.isbn) #{book.bookname}
                 |
                 |
                 |
-                | #{book.expenses}
+                | Expense:#{book.expenses} ,
                 |
                 |
                 |
-                | #{book.sales}
+                | Sales:#{book.sales} ,
                 |
                 |
                 |
-                | #{book.publisher_earnings}
+                | Publisher Earning: #{book.publisher_earnings} ,
                 |
                 |
                 |
-                | #{book.profit}
+                | Profit:#{book.profit} 
                 |
                 |
                 |
-                button(type="button",id=book.isbn,class="restock",stock='#{book.stock}',publisher='#{book.publisher}',style="display: hidden;") Restock: #{book.stock}
+                if(book.stock < 20)
+                    button(type="button",id=book.isbn,class="restock",stock='#{book.stock}',publisher='#{book.publisher}',style="display: hidden;") Restock: #{book.stock}
                 br
     br
     script(src="../finances.js")

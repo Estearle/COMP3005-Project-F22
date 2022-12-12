@@ -474,32 +474,33 @@ app.get("/report",(req,res)=>{
   res.render('report',{});
 })
 
-app.get("/finances"), (req,res)=>{
-  let {rows} = client.query('SELECT * FROM public.books');
+app.get("/finances",async (req,res)=>{
+  let {rows} = await client.query('SELECT * FROM public.books');
   let data = rows;
-  delete data[price];
+  console.log(data);
+  //delete data[price];
   data.forEach(book=> {
-    book["expenses"] = (parseInt(data[stock])+parseInt(data[numbersold]))*parseFloat(data[cost]);
-    book["sales"] = parseInt(data[numbersold])*parseFloat(data[price]);
-    book["publisher_earnings"] = parseFloat(book["sales"])*parseFloat(book["percentsales"])/100;
-    book["profit"] = parseFloat(book["sales"]) - parseFloat(book["publisher_earnings"]) - parseFloat(book["expenses"]);
+    book["expenses"] = ((parseInt(book['stock'])+parseInt(book['numbersold']))*parseFloat(book['cost'])).toFixed(2);
+    book["sales"] = (parseInt(book['numbersold'])*parseFloat(book['price'])).toFixed(2);
+    book["publisher_earnings"] = (parseFloat(book["sales"])*parseFloat(book["percentsales"])/100).toFixed(2);
+    book["profit"] = (parseFloat(book["sales"]) - parseFloat(book["publisher_earnings"]) - parseFloat(book["expenses"])).toFixed(2);
   })
   res.render('finances',{data,data});
-}
+})
 
-app.get("/genres"), (req,res)=>{
-  let {rows} = client.query('SELECT * FROM public.genres');
+app.get("/genres", async (req,res)=>{
+  let {rows} = await client.query('SELECT * FROM public.genres');
   let genres = rows;
   console.log(genres);
   res.render('genres',{data:genres});
-}
+})
 
-app.get("/authors"), (req,res)=>{
-  let {rows} = client.query('SELECT * FROM public.authors');
+app.get("/authors", async(req,res)=>{
+  let {rows} = await client.query('SELECT * FROM public.authors');
   let authors = rows;
   console.log(authors);
   res.render('authors',{data:authors});
-}
+})
 
 // Owner Home Page
 app.get('/owner', (req,res) => {
