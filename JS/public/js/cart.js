@@ -3,7 +3,7 @@ let checkout = document.getElementById("checkout");
 
 remove.onclick = removeFromCart;
 checkout.onclick = submitOrder;
-
+// modify cart list by using checkboxes
 function removeFromCart() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() { 
@@ -27,7 +27,7 @@ function removeFromCart() {
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.send(JSON.stringify(del_list));
 }
-
+// send the cart information to the next step of the order phase to finalize the order with user info
 function submitOrder() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() { 

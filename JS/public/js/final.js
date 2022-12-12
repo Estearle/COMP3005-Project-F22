@@ -1,6 +1,7 @@
 let order = document.getElementById("order");
 order.onclick = sendOrder;
 
+// onclick function to send order to the server to update the database
 function sendOrder() {
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() { 
