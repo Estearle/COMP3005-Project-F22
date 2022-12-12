@@ -219,21 +219,25 @@ app.get("/add",(req,response)=>{
     response.redirect(`/`);
   }
   let publishers, authors, genres;
+  // get information of book from publishers
   client.query('SELECT * FROM public.publishers',(err,res)=>{
     if(err){
       response.status(404);
     }
     publishers = res.rows;
+    // get information of book from authors
     client.query('SELECT * FROM public.authors',(err,res)=>{
       if(err){
         response.status(404);
       }
       authors = res.rows;
+      // get information of book from genres
       client.query('SELECT * FROM public.genres',(err,res)=>{
         if(err){
           response.status(404);
         }
         genres = res.rows;
+        // send all information to be able to display all fields of a book
         response.status(200).render('add',{publishers:publishers, authors:authors, genres:genres});
       });
     });
@@ -311,12 +315,12 @@ app.post('/books', (req,res) => {
   let stock = false;
   if (orders !== null) {
     for (let book in orders) {
-      if (!cart.hasOwnProperty(book)) {
+      if (!cart.hasOwnProperty(book)) { // check to see if its a new book in cart
         cart[book] = orders[book];
-      } else if (cart[book].add + orders[book].add > stock) {
+      } else if (cart[book].add + orders[book].add > stock) { // check to see if book is more orders than stocks
         response = "Could not add an item to cart due to exceeding stock number, please check your order again";
         stock = true;
-      } else {
+      } else { // if book is not new and still has stock remaining then just increase the number in cart
         cart[book].add += orders[book].add;
       }
     }
