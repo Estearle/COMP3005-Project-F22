@@ -198,7 +198,8 @@ app.get('/books/:ISBN',async(req,response)=>{
     })
   })  
 })
-  
+
+// Add Book PUT request to update the number of stock - button only visible when under the threshold set 
 app.put('/books/:ISBN',async(req,response)=>{
   let isbn = req.body;
   client.query(`UPDATE books SET stock = stock + 20 WHERE isbn = '${isbn}'`, (err, res)=> {
@@ -337,6 +338,7 @@ app.get('/order',(req,res)=>{
   res.render('order',{cart:cart});
 })
 
+// Add Items to cart POST /order request
 app.post('/order', (req,res)=>{
   let final_cart = req.body;
   if (final_cart !== null) {
@@ -349,6 +351,7 @@ app.post('/order', (req,res)=>{
   }
 })
 
+// Remove Items from cart PUT /order request
 app.put('/order', (req,res)=>{
   let del_list = req.body;
   if (del_list !== null) {
@@ -360,6 +363,7 @@ app.put('/order', (req,res)=>{
   res.render('order',{cart:cart})
 })
 
+// Get Logged In User info to have data on finalize order page
 app.get("/final", async (req,res)=>{
   if (first) {
     res.redirect(`/`);
@@ -375,6 +379,7 @@ app.get("/final", async (req,res)=>{
   }
 })
 
+// POST /final request to finalize order with all the appropriate information
 app.post("/final", async (req,response) =>{
   let info = req.body;
   let books = info["cart"];
@@ -386,6 +391,7 @@ app.post("/final", async (req,response) =>{
 
   let tracking = '';
   let unique = true;
+  // create a unique tracking number
   do {
     tracking = generateTracking(10);
     for (let i = 0; i < rows.length-1; i++) {
@@ -394,17 +400,19 @@ app.post("/final", async (req,response) =>{
       }
     }
   } while (unique === false);
+  // create the query for user information
   let query = {
     text:'INSERT INTO orders(ordernumber,billinginfo,shippinginfo,trackinginfo,customer) VALUES($1,$2,$3,$4,$5)',
     values:[newOrderNum, info["user"].billinginfo, info["user"].shippinginfo, tracking, info["user"].uname],
   }
-
+  // add to the information to orders database
   client.query(query,(err,res)=>{
     if(err){
       console.log("could not add order to database");
     } else {
       console.log("order added to database");
       console.log(books);
+      // add to bookorders database 
       for (let id in books) {
         console.log(id);
         client.query(`INSERT INTO bookorders(ordernumber, isbn, numbersold) VALUES($1,$2,$3)`,[newOrderNum,id,books[id].add], (err,res)=>{
@@ -420,6 +428,7 @@ app.post("/final", async (req,response) =>{
         if (stock < 20) {
           restock = 'true';
         }
+        // update the books relation with new stock, number sold and if need to restock
         console.log("===================" + id + "===================");
         console.log("stock: " + stock + " sold: " + sold + " restock: " + restock);
         client.query(`UPDATE books SET stock = '${stock}', numbersold = '${sold}', restock = '${restock}' WHERE isbn = '${id}'`, (err, res)=> {
@@ -432,7 +441,7 @@ app.post("/final", async (req,response) =>{
 
         let genres = books[id].genre;
         let authors = books[id].author;    
-
+        // update the genre sales values in genres relation
         for (let i = 0; i < genres.length; i++) {
           client.query(`UPDATE genres SET sales = sales + '${books[id].add}', totalsales = totalsales + '${books[id].add * books[id].price}' WHERE genre = '${genres[i]}'`, (err, res)=> {
             if(err) {
@@ -441,7 +450,7 @@ app.post("/final", async (req,response) =>{
             }
           })
         }
-
+        // update the author sales values in authors relation
         for (let i = 0; i < authors.length; i++) {
           client.query(`UPDATE authors SET sales = sales + '${books[id].add}', totalsales = totalsales + '${books[id].add * books[id].price}' WHERE author = '${authors[i]}'`, (err, res)=> {
             if(err) {
@@ -457,7 +466,7 @@ app.post("/final", async (req,response) =>{
   
 })
 
-
+// helper function to generate tracking
 function generateTracking() {
   let tracking = '';
   let t_length = 10;
@@ -474,11 +483,12 @@ app.get("/report",(req,res)=>{
   res.render('report',{});
 })
 
+// GET /finances page request to show all the expenditures
 app.get("/finances",async (req,res)=>{
   let {rows} = await client.query('SELECT * FROM public.books');
   let data = rows;
   console.log(data);
-  //delete data[price];
+  // create expenditures calculations
   data.forEach(book=> {
     book["expenses"] = ((parseInt(book['stock'])+parseInt(book['numbersold']))*parseFloat(book['cost'])).toFixed(2);
     book["sales"] = (parseInt(book['numbersold'])*parseFloat(book['price'])).toFixed(2);
@@ -488,6 +498,7 @@ app.get("/finances",async (req,res)=>{
   res.render('finances',{data,data});
 })
 
+// show all the sales for each genre
 app.get("/genres", async (req,res)=>{
   let {rows} = await client.query('SELECT * FROM public.genres');
   let genres = rows;
@@ -495,6 +506,7 @@ app.get("/genres", async (req,res)=>{
   res.render('genres',{data:genres});
 })
 
+// show all the sales for each author
 app.get("/authors", async(req,res)=>{
   let {rows} = await client.query('SELECT * FROM public.authors');
   let authors = rows;

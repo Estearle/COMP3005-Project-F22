@@ -11,7 +11,7 @@ if (addCartB !== null) {
 
 let cart = {};
 let item = {};
-
+// add to cart function
 function addCartFunction(){
     let xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() { 
@@ -21,6 +21,7 @@ function addCartFunction(){
             window.location.href = '/order';
         }
     }
+    // if on booklist page then add 1 of each book with a selected checkbox to the card
     if (window.location.href == "http://localhost:3000/books") {
         let allBooks = document.getElementsByClassName("search");
         for(let i = 0; i < allBooks.length; i++) {
@@ -45,6 +46,7 @@ function addCartFunction(){
             }
         };
     } else {
+        // if on the single book page then can add any amount of number of that specific book as long as it is still in stock for that amount
         let book = JSON.parse(((document.getElementsByTagName("p"))[0].getAttribute("name")));
         let amount = document.getElementById("add").value;
         item = {"isbn": book.isbn, 
@@ -63,6 +65,7 @@ function addCartFunction(){
     xhttp.send(JSON.stringify(cart));
 }
 
+// search functionality in the booklist page
 function searchFunction(){
     console.log("SEARCHING!")
     let search = document.getElementById("search").value;
@@ -70,11 +73,13 @@ function searchFunction(){
 
         let allBooks = document.getElementsByClassName("search");
         let books = [];
-        
+        // grab the search info from the textbox and tokenize it
         let searchInfo = search.toLowerCase().split(" ").filter(function(token) {return token.trim() !== ''});
-
+        // create it into a RegExp
         let searchInfoRegex = new RegExp(searchInfo.join('|'), 'gim');
+
         for(let i = 0; i < allBooks.length; i++) {
+            // make the visibility of all the books to none so they do not waste space on the page
             let bookInfo = JSON.parse(allBooks[i].name);
             books.push(bookInfo);
             allBooks[i].style.display = "none";
@@ -83,9 +88,11 @@ function searchFunction(){
         };
         console.log("books");
         console.log(books);
+        // filter through the list of books and see which one matches the RegExp
         let bookMatch = books.filter(function(element){
             let bookSearch = '';
             for(let key in element) {
+                // if match is found then add to a string of information to return
                 if(element.hasOwnProperty(key) && element[key] != '' && (key === 'bookname' || key === 'publisher' || key === 'genre' || key === 'author')) {
                     bookSearch += element[key].toString().toLowerCase().trim()+' ';
                 }
@@ -94,6 +101,7 @@ function searchFunction(){
         })
         console.log(bookMatch);
         
+        // for each valid book with ANY information that matches the search then, make them visible again on the dom
         for (let book of bookMatch) {
             for(let i = 0; i < allBooks.length; i++) {
                 let bookInfo = JSON.parse(allBooks[i].name);
