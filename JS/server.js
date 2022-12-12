@@ -182,21 +182,21 @@ app.get('/books/:ISBN',async(req,response)=>{
   console.log(genreResult);
   let searchAuthor = await client.query(`SELECT author FROM bookauthors WHERE isbn='${obj_id}'`);
   console.log(searchAuthor.rows[0].author);
-
-  let book,genre;
-  client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
-    if(err){
-      response.status(404);
-    }
-    book = res.rows;
-    client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
-      if(err){
-        response.status(404);
-      }
-      genre = r.rows;
-      response.status(200).render('book',{book:b,genre:genre,author:searchAuthor.rows});
-    })
-  })  
+  response.status(200).render('book',{book:b,genre:genreResult,author:searchAuthor.rows});
+  // let book,genre;
+  // client.query(`SELECT * FROM public.books WHERE isbn='${obj_id}'`,(err,res)=>{
+  //   if(err){
+  //     response.status(404);
+  //   }
+  //   book = res.rows;
+  //   client.query(`SELECT genre FROM public.bookgenres WHERE isbn='${obj_id}'`,(err,r)=>{
+  //     if(err){
+  //       response.status(404);
+  //     }
+  //     genre = r.rows;
+      
+  //   })
+  // })  
 })
   
 app.put('/books/:ISBN',async(req,response)=>{
